@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from django.conf.global_settings import AUTH_USER_MODEL
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -19,7 +20,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTH_USER_MODEL='authentication.Customer'
 # Application definition
 
 INSTALLED_APPS = [
