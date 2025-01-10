@@ -1,0 +1,64 @@
+{% extends "accessories/main.html" %}
+{% load static %}
+{% block title %}Product Details{% endblock title %}
+{% block content %}
+{% include "accessories/navbar.html" %}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Product Image -->
+            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+        </div>
+        <div class="col-md-6">
+            <!-- Product Details -->
+            <h1 class="display-4">{{ product.name }}</h1>
+            <p class="text-muted">Category: {{ product.category }}</p>
+            <p class="lead">{{ product.description }}</p>
+            <h4 class="text-primary">Price: ${{ product.price }}</h4>
+            <div class="mt-4">
+                <!-- Add to Cart Form with Quantity and Size -->
+                <form method="post" action="#">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Size:</label>
+                        <div>
+                            {% for size in product.sizes %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="size{{ forloop.counter }}" name="size" value="{{ size }}" required>
+                                <label class="form-check-label" for="size{{ forloop.counter }}">{{ size }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" class="form-control w-25" value="1" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg mt-3">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <!-- Additional Information or Related Products -->
+        <h3>Related Products</h3>
+        <div class="row">
+            {% for related_product in related_products %}
+            <div class="col-md-3">
+                <div class="card">
+                    <img src="{{ related_product.image.url }}" class="card-img-top" alt="{{ related_product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ related_product.name }}</h5>
+                        <p class="card-text text-primary">${{ related_product.price }}</p>
+                        <a href="#" class="btn btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
