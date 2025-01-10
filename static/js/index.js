@@ -23,13 +23,13 @@ function hover_effect() {
   dropdownMenu.addEventListener("mouseover", function () {
     categories.classList.add("show");
     dropdownMenu.classList.add("show");
-    categories.setAttribute("aria-expanded", "true");
+    categories.setAttribute("aria-expanded", "false");
   });
 
   dropdownMenu.addEventListener("mouseout", function () {
     categories.classList.remove("show");
     dropdownMenu.classList.remove("show");
-    categories.setAttribute("aria-expanded", "false");
+    categories.setAttribute("aria-expanded", "true");
   });
 }
 

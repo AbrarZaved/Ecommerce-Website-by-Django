@@ -24,15 +24,26 @@
           <i class="bi bi-list"></i> Categories
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">
-            <i class="bi bi-gear"></i> Action
+          <a class="dropdown-item" href="{% url 'product_by_categories' 'Bottomwear' %}">
+            Bottomwear
           </a>
-          <a class="dropdown-item" href="#">
-            <i class="bi bi-lightning"></i> Another action
+          <a class="dropdown-item" href="{% url 'product_by_categories' 'Clothiong Accessories' %}">
+            Clothiong Accessories
           </a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">
-            <i class="bi bi-box-arrow-up-right"></i> Something else here
+          <a class="dropdown-item" href="{% url 'product_by_categories' 'Innerwear and Swimwear' %}">
+            Innerwear and Swimwear
+          </a>
+          <a class="dropdown-item" href="{% url 'product_by_categories' 'Kurtas' %}">
+            Kurtas, Ethnic Sets and Bottoms
+          </a>
+          <a class="dropdown-item" href="{% url 'product_by_categories' 'Raincoats' %}">
+            Raincoats
+          </a>
+          <a class="dropdown-item" href="{% url 'product_by_categories' 'Topwear' %}">
+            Topwear
+          </a>
+          <a class="dropdown-item" href="{% url 'product_by_categories' 'Winter Wear' %}">
+            Winter Wear
           </a>
         </div>
       </li>
@@ -41,8 +52,9 @@
           <i class="bi bi-cart"></i> Cart
         </a>
       </li>
-      <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <form class="form-inline my-2 my-lg-0" method="POST" action='{% url "index" %}'>
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" value="{{title}}" aria-label="Search" name="title">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
           <i class="bi bi-search"></i> Search
         </button>
