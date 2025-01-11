@@ -33,3 +33,18 @@ function hover_effect() {
   });
 }
 
+//Handling Authentication
+
+var loginSubmit = document.getElementById("loginSubmit");
+loginSubmit.addEventListener("click", (e) => {
+  e.preventDefault();
+  var loginPhone = document.getElementById("loginPhone").value;
+  var loginPassword = document.getElementById("loginPassword").value;
+  fetch("signin", {
+    method: "POST",
+    header: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ loginPhone, loginPassword }),
+  });
+});
