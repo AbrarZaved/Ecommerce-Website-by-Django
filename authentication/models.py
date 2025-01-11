@@ -1,3 +1,4 @@
+from random import choice
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 
@@ -43,8 +44,9 @@ class Customer(AbstractBaseUser):
     email = models.EmailField(max_length=254, unique=True)
     phone_number = models.CharField(max_length=50, unique=True, null=False, blank=False)
     gender = models.CharField(max_length=50, choices=GENDER)
-    home_address = models.CharField(max_length=500)
-    office_address = models.CharField(max_length=500)
+
+
+    
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -67,3 +69,21 @@ class Customer(AbstractBaseUser):
     def has_module_perms(self, app_label):
         """Check if the user has permissions to view the app `app_label`."""
         return True
+
+
+class Addressbook(models.Model):
+
+    home = "home"
+    office = "office"
+
+    ADDRESS = [(home, "Home"), (office, "Office")]
+
+    user = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    division = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    zone = models.CharField(max_length=100)
+    address = models.TextField()
+    address_label = models.CharField(max_length=50, choices=ADDRESS)
+
+    def __str__(self):
+        return str(self.user)

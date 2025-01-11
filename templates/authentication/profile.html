@@ -1,0 +1,261 @@
+{% extends "accessories/main.html" %}
+{% load static %}
+
+{% block title %}Golpo Ghor{% endblock title %}
+
+{% block content %}
+{% include "accessories/navbar.html" %}
+
+<br><br>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<div class="container emp-profile">
+    <form method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h5>{{ request.user.name }}
+                        <span class="ml-2" data-toggle="modal" data-target="#edit_profile">
+                            <i class="bi bi-pencil-square"></i>
+                        </span>
+                    </h5>
+                    <p class="proile-rating">Rating: <span>8/10</span></p>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Address</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false">My Orders</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="tab-content profile-tab" id="myTabContent">
+                    <!-- About Section -->
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Name</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ request.user.name }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Email</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ request.user.email }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Phone</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ request.user.phone_number }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Total Orders</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ total_orders }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Total Reviews</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ total_reviews }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Section -->
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-hover table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th style="text-align:center">Label</th>
+                                            <th style="text-align:center">Division</th>
+                                            <th style="text-align:center">City</th>
+                                            <th style="text-align:center">Address</th>
+                                            <th style="text-align:center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for address in addresses %}
+                                        <tr>
+                                            <th scope="row">{{ forloop.counter }}</th>
+                                            <td style="text-align:center">{{ address.address_label|title }}</td>
+                                            <td style="text-align:center">{{ address.division }}</td>
+                                            <td style="text-align:center">{{ address.city }}</td>
+                                            <td style="text-align:center">{{ address.address }}</td>
+                                            <td style="text-align:center">
+                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#edit_address_{{ forloop.counter }}">Edit</button>
+                                                <a href="{% url 'delete_address' address.id %}" class="btn btn-danger btn-sm">Delete</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary mt-3" data-toggle="modal" data-target="#edit_address">Add Address</button>
+                    </div>
+
+                    <!-- My Orders Section -->
+                    <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="mb-3">Your Orders</h5>
+                                {% if orders %}
+                                <table class="table table-hover table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Order ID</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Total</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <th scope="row">{{ forloop.counter }}</th>
+                                            <td >{{ order.id }}</td>
+                                            <td>{{ order.date }}</td>
+                                            <td>{{ order.status }}</td>
+                                            <td>${{ order.total }}</td>
+                                            <td>
+                                                <button class="btn btn-info btn-sm" onclick="viewOrderDetails({{ order.id }})">View</button>
+                                                <button class="btn btn-danger btn-sm" onclick="cancelOrder({{ order.id }})">Cancel</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                <p>You have no orders yet.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>           
+</div>
+
+
+<!-- Modal to Edit Profile -->
+<div class="modal fade" id="edit_profile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Your Profile</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'profile_attributes' %}">
+            {% csrf_token %}
+          <div class="form-group">
+            <label for="profileName">Name</label>
+            <p id="profileName">{{profile.name}}</p>
+          </div>
+          <div class="form-group">
+            <label for="profileEmail">Email</label>
+            <p id="profileEmail">{{profile.email}}</p>
+          </div>
+          <div class="form-group">
+            <label for="profilePhone">Phone Number</label>
+            <p id="profilePhone">{{profile.phone_number}}</p>
+          </div>
+          <div class="form-group">
+            <label for="profileGender">Gender</label>
+            <p id="profileGender">{{profile.gender}}</p>
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal to Edit Address -->
+<div class="modal fade" id="edit_address" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Your Address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'profile_attributes' %}">
+            {% csrf_token %}
+            {{address.user}}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="division">Address Label</label>
+                    <p id="division">{{address.address_label}}</p>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="city">Division</label>
+                    <p id="city">{{address.division}}</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="zone">City</label>
+                    <p id="zone">{{address.city}}</p>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="address">Zone</label>
+                    <p id="address">{{address.zone}}</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="addressLabel">Address</label>
+                <p id="addressLabel">{{address.address}}</p>
+            </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+{% include "accessories/footer.html" %}
+{% endblock content %}
