@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 import json
 
+from joblib.parallel import division
+
 from authentication.forms import AddressForm, CustomerForm
 from authentication.models import Addressbook, Customer
 
@@ -73,7 +75,28 @@ def profile_attributes(request):
 
     return redirect("profile")
 
-def delete_address(request,boom):
-    address=Addressbook.objects.get(pk=boom)
+
+def delete_address(request, boom):
+    address = Addressbook.objects.get(pk=boom)
     address.delete()
-    return redirect('profile')
+    return redirect("profile")
+
+
+def edit_address(request, boom):
+    if request.method == "POST":
+        address_label = request.POST.get("address_label")
+        address = request.POST.get("address")
+        city = request.POST.get("city")
+        division = request.POST.get("division")
+        zone = request.POST.get("zone")
+
+        address_instance = Addressbook.objects.get(pk=boom)
+        address_instance.address_label = address_label
+        address_instance.address = address
+        address_instance.city = city
+        address_instance.division = division
+        address_instance.zone = zone
+        address_instance.save()
+        return redirect("profile")
+   
+    return redirect("profile")

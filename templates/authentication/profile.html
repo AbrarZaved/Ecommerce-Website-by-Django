@@ -14,7 +14,6 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <div class="container emp-profile">
-    <form method="post">
         <div class="row">
             <div class="col-md-6">
                 <div class="profile-head">
@@ -89,17 +88,7 @@
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                         <div class="row">
                             <div class="col-md-12">
-                                <table class="table table-hover table-bordered">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>#</th>
-                                            <th style="text-align:center">Label</th>
-                                            <th style="text-align:center">Division</th>
-                                            <th style="text-align:center">City</th>
-                                            <th style="text-align:center">Address</th>
-                                            <th style="text-align:center">Actions</th>
-                                        </tr>
-                                    </thead>
+                                <table class="table table-hover table-borderless">
                                     <tbody>
                                         {% for address in addresses %}
                                         <tr>
@@ -109,8 +98,8 @@
                                             <td style="text-align:center">{{ address.city }}</td>
                                             <td style="text-align:center">{{ address.address }}</td>
                                             <td style="text-align:center">
-                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#edit_address_{{ forloop.counter }}">Edit</button>
-                                                <a href="{% url 'delete_address' address.id %}" class="btn btn-danger btn-sm">Delete</a>
+                                                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#edit_address_{{ forloop.counter }}"><i class="bi bi-pencil"></i></button>
+                                                <a href="{% url 'delete_address' address.id %}" class="btn btn-danger btn-sm"><i class="bi bi-trash2"></i></a>
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -162,8 +151,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </form>           
+        </div>          
 </div>
 
 
@@ -255,6 +243,54 @@
     </div>
   </div>
 </div>
+
+{% for address in addresses %}
+<div class="modal fade" id="edit_address_{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Your Address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'edit_address' address.id %}">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="addressLabel_{{ forloop.counter }}">Address Label</label>
+                    <input type="text" class="form-control" id="addressLabel_{{ forloop.counter }}" name="address_label" value="{{ address.address_label }}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="division_{{ forloop.counter }}">Division</label>
+                    <input type="text" class="form-control" id="division_{{ forloop.counter }}" name="division" value="{{ address.division }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="city_{{ forloop.counter }}">City</label>
+                    <input type="text" class="form-control" id="city_{{ forloop.counter }}" name="city" value="{{ address.city }}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="zone_{{ forloop.counter }}">Zone</label>
+                    <input type="text" class="form-control" id="zone_{{ forloop.counter }}" name="zone" value="{{ address.zone }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="address_{{ forloop.counter }}">Address</label>
+                <input type="text" class="form-control" id="address_{{ forloop.counter }}" name="address" value="{{ address.address }}">
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 
 {% include "accessories/footer.html" %}
