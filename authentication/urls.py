@@ -8,6 +8,11 @@ urlpatterns = [
     path("sign_out", views.sign_out, name="sign_out"),
     path("profile", views.profile_view, name="profile"),
     path("edit_address/<int:boom>", views.edit_address, name="edit_address"),
+    path(
+        "default_address_handle/<int:boom>",
+        views.default_address_handle,
+        name="default_address_handle",
+    ),
     path("delete_address/<int:boom>", views.delete_address, name="delete_address"),
     path("profile_attributes", views.profile_attributes, name="profile_attributes"),
     path("sign_in", csrf_exempt(views.sign_in), name="sign_in"),

@@ -28,7 +28,7 @@
                             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Address</a>
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Addresses</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false">My Orders</a>
@@ -68,10 +68,18 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
+                                <label>Default Delivery Address</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{request.user.default_address.address}}, {{request.user.default_address.city}}, {{ request.user.default_address.division }} <span class="badge badge-{% if request.user.default_address.address_label == 'Home' %}warning{% else %}secondary{% endif %}">{{request.user.default_address.address_label}}</span></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
                                 <label>Total Orders</label>
                             </div>
                             <div class="col-md-6">
-                                <p>{{ total_orders }}</p>
+                                <p>{{ request.user.total_orders }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -79,7 +87,7 @@
                                 <label>Total Reviews</label>
                             </div>
                             <div class="col-md-6">
-                                <p>{{ total_reviews }}</p>
+                                <p>{{ request.user.total_reviews }}</p>
                             </div>
                         </div>
                     </div>
@@ -98,8 +106,17 @@
                                             <td style="text-align:center">{{ address.city }}</td>
                                             <td style="text-align:center">{{ address.address }}</td>
                                             <td style="text-align:center">
-                                                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#edit_address_{{ forloop.counter }}"><i class="bi bi-pencil"></i></button>
-                                                <a href="{% url 'delete_address' address.id %}" class="btn btn-danger btn-sm"><i class="bi bi-trash2"></i></a>
+                                                {% if address.is_default %}
+                                                    <button class="btn btn-info btn-sm" style="color:white; cursor:default;">Default Address</button>
+                                                {% else %}
+                                                    <a href="{% url 'default_address_handle' address.id %}" class="btn btn-success btn-sm">Make Default</a>
+                                                {% endif %}
+                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#edit_address_{{ forloop.counter }}">
+                                                    <i class="bi bi-pencil"></i> Edit
+                                                </button>
+                                                <a href="{% url 'delete_address' address.id %}" class="btn btn-danger btn-sm">
+                                                    <i class="bi bi-trash2"></i> Delete
+                                                </a>
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -260,8 +277,12 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="addressLabel_{{ forloop.counter }}">Address Label</label>
-                    <input type="text" class="form-control" id="addressLabel_{{ forloop.counter }}" name="address_label" value="{{ address.address_label }}">
+                    <select class="form-control" id="addressLabel_{{ forloop.counter }}" name="address_label">
+                        <option value="Home" {% if address.address_label == "Home" %}selected{% endif %}>Home</option>
+                        <option value="Office" {% if address.address_label == "Office" %}selected{% endif %}>Office</option>
+                    </select>
                 </div>
+
                 <div class="form-group col-md-6">
                     <label for="division_{{ forloop.counter }}">Division</label>
                     <input type="text" class="form-control" id="division_{{ forloop.counter }}" name="division" value="{{ address.division }}">

@@ -98,5 +98,13 @@ def edit_address(request, boom):
         address_instance.zone = zone
         address_instance.save()
         return redirect("profile")
-   
+
+    return redirect("profile")
+
+
+def default_address_handle(request, boom):
+    address = Addressbook.objects.get(pk=boom)
+    address.is_default = True
+    Customer.objects.filter(id=request.user.id).update(default_address=address)
+    address.save()
     return redirect("profile")
