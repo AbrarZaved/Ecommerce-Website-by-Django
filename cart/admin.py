@@ -6,6 +6,6 @@ from cart.models import Cart
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display=['user','product','selling_price','discount_price']
+    list_display=['user','product','size','quantity','selling_price','discount_price']
     list_filter=['user']
     search_fields=['user','product__pid']

@@ -23,8 +23,6 @@ def sign_in(request):
             return JsonResponse(
                 {
                     "success": True,
-                    "toast_message": "Successfully Logged in",
-                    "redirect_url": "/index",
                 }
             )
         else:
@@ -81,6 +79,9 @@ def profile_attributes(request):
         if address.is_valid():
             address_instance = address.save(commit=False)
             address_instance.user = request.user
+            if Addressbook.objects.filter(user=address_instance.user).exists():
+                messages.error(request, "Address already Exists")
+                return redirect("profile")
             address_instance.save()
             messages.success(request, "Address Added")
             return redirect("profile")
