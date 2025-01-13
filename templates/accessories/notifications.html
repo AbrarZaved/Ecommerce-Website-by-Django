@@ -1,0 +1,25 @@
+{% load static %}
+<link
+  href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/toasty.css"
+  rel="stylesheet"
+/>
+<link href="{% static 'css/notification.css' %}" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/toasty.js"></script>
+<script src="{% static 'js/notification.js' %}"></script>
+
+<div class="page-content page-container" id="page-content">
+  <div class="padding">
+    <div class="row container d-flex justify-content-center">
+      {% if messages %}
+        {% for message in messages %}
+          <div
+            class="toast"
+            data-message="{{ message }}"
+            data-level="{{ message.tags }}"
+            style="display:none;">
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>

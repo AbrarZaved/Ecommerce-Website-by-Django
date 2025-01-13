@@ -3,13 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 import json
-
-from joblib.parallel import division
-
+from django.contrib import messages
 from authentication.forms import AddressForm, CustomerForm
 from authentication.models import Addressbook, Customer
 
-# Create your views here.
+# Django View
+from django.http import JsonResponse
 
 
 def sign_in(request):
@@ -21,7 +20,17 @@ def sign_in(request):
         user = authenticate(phone_number=phone_number, password=password)
         if user is not None:
             login(request, user)
-            return redirect("index")
+            return JsonResponse(
+                {
+                    "success": True,
+                    "toast_message": "Successfully Logged in",
+                    "redirect_url": "/index",
+                }
+            )
+        else:
+            return JsonResponse(
+                {"success": False, "toast_message": "Invalid credentials"}
+            )
 
 
 def sign_up(request):
@@ -29,7 +38,9 @@ def sign_up(request):
         data = json.loads(request.body)
         phone_number = data.get("registerPhone")
         password = data.get("registerPassword")
-
+        if Customer.objects.filter(phone_number=phone_number).exists():
+            messages.success(request, "Phone Number is Already Registered")
+            return redirect("index")
         user = Customer.objects.create_user(
             phone_number=phone_number, password=password
         )
@@ -37,11 +48,15 @@ def sign_up(request):
         user = authenticate(phone_number=phone_number, password=password)
         if user is not None:
             login(request, user)
+            messages.info(
+                request, "Registration Successful, Please Complete your profile"
+            )
             return redirect("index")
 
 
 def sign_out(request):
     logout(request)
+    messages.success(request, "Log Out Successful")
     return redirect("index")
 
 
@@ -67,10 +82,12 @@ def profile_attributes(request):
             address_instance = address.save(commit=False)
             address_instance.user = request.user
             address_instance.save()
+            messages.success(request, "Address Added")
             return redirect("profile")
 
         if profile.is_valid():
             profile.save()
+            messages.info(request, "Profile Updated")
             return redirect("profile")
 
     return redirect("profile")
@@ -79,6 +96,7 @@ def profile_attributes(request):
 def delete_address(request, boom):
     address = Addressbook.objects.get(pk=boom)
     address.delete()
+    messages.success(request, "Address Deleted")
     return redirect("profile")
 
 
@@ -97,6 +115,7 @@ def edit_address(request, boom):
         address_instance.division = division
         address_instance.zone = zone
         address_instance.save()
+        messages.info(request, "Address Updated")
         return redirect("profile")
 
     return redirect("profile")
@@ -107,4 +126,5 @@ def default_address_handle(request, boom):
     address.is_default = True
     Customer.objects.filter(id=request.user.id).update(default_address=address)
     address.save()
+    messages.success(request, "Default Address Changed")
     return redirect("profile")

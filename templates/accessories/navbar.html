@@ -64,7 +64,7 @@
           </a>
         </div>
       </li>
-      <li class="nav-item">
+      <li class="nav-item {% if request.resolver_match.url_name == 'cart' %}active{% endif %}">
         {% if request.user.is_authenticated %}
         <a class="nav-link" href="{% url 'cart' %}">
           <i class="bi bi-cart"></i> Cart
