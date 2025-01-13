@@ -1,0 +1,66 @@
+@media (min-width: 1025px) {
+  .h-custom {
+    min-height: 100vh !important;
+  }
+}
+
+.card-registration .select-input.form-control[readonly]:not([disabled]) {
+  font-size: 1rem;
+  line-height: 2.15;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+}
+
+.card-registration .select-arrow {
+  top: 13px;
+}
+
+.h-custom {
+  background-color: #d2c9ff;
+  padding-bottom: 20px; /* Ensures there's space below the content */
+}
+
+.card-registration {
+  border-radius: 15px;
+}
+
+.card-registration .card-body {
+  padding: 20px;
+}
+
+.card-registration .row {
+  margin: 0; /* Removes unwanted margins */
+}
+
+.btn-block {
+  margin-top: 15px; /* Adds space between buttons */
+}
+
+.footer {
+  padding: 20px 0; /* Ensures footer has consistent padding */
+}
+
+/* Ensures proper alignment for the quantity input and buttons */
+.quantity-box {
+  width: 60px; /* Adjusts the width for better user experience */
+}
+
+.form-control-sm {
+  text-align: center; /* Centers the quantity input text */
+  max-width: 70px; /* Ensures consistent width */
+}
+
+/* Centers the form check input (checkbox) properly */
+.form-check-input {
+  margin-top: 0.1rem; /* Adjust for better vertical alignment */
+}
+
+/* Ensures proper alignment of the plus and minus buttons */
+.d-flex.align-items-center button {
+  line-height: 1; /* Ensures buttons are not stretched vertically */
+}
+
+.bi-dash,
+.bi-plus {
+  font-size: 1rem; /* Ensures consistent icon size */
+}
