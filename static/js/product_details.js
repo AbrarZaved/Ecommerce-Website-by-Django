@@ -1,5 +1,3 @@
-console.log("hello");
-
 document.addEventListener("DOMContentLoaded", function () {
   var priceElement = document.getElementById("price");
   var price = parseInt(priceElement.getAttribute("data-price"));
