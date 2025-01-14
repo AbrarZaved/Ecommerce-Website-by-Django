@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %}Golpo Ghor{% endblock title %}
 {% block content %}
+{% load custom_filter %}
 {% include "accessories/navbar.html" %}
 <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
 <link crossorigin="anonymous" 
@@ -44,26 +45,25 @@
                         <i class="bi bi-plus"></i>
                       </button>
                     </div>
-                    <div class="col-ml-3 col-ml-2 col-xl-1 text-center">
+                    <div class="col-ml-1 col-ml-1 col-xl-1 text-center" style="margin-left: -15px; margin-right:25px">
                       <div class="btn-group">
-                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          {{cart.size}}
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 50px;">
-                            <a class="dropdown-item" href="#">S</a>
-                            <a class="dropdown-item" href="#">M</a>
-                            <a class="dropdown-item" href="#">L</a>
-                            <a class="dropdown-item" href="#">XL</a>
-                            <a class="dropdown-item" href="#">XXL</a>
-                        </div>
+                       <select class="selectpicker btn btn-dark"  name="size_select" data-style="auto" style="min-width:20px; margin-right:2px">
+                        <option selected value={{cart.size}}>{{cart.size}}</option>
+                        {% for size in "S,M,L,XL,XXL"|split:"," %}
+                        {% if cart.size != size %}
+                          <option value="{{size}}">{{size}}</option>
+                        {% endif %}
+
+                        {% endfor %}
+                      </select>
                       </div>
                     </div>
-                    <div class="col-ml-3 col-ml-3 col-xl-2 text-center">
+                    <div class="col-ml-3 col-ml-3 col-xl-2 text-center" style="margin-right:-20px">
                       <h6 class="mb-0">$ {{cart.selling_price}}</h6>
                       {% comment %} <h6 class="mb-0 font-weight-light text-decoration-line-through">$ {{cart.selling_price}}</h6> {% endcomment %}
                     </div>
                     <div class="col-md-1 col-lg-1 col-xr-1 text-end">
-                      <a href="{% url 'delete_cart_item' cart.id %}" class="text-muted"><i class="bi bi-file-x-fill"></i></a>
+                      <a href="{% url 'delete_cart_item' cart.id %}" style="color:red"><i class="bi bi-file-x-fill"></i></a>
                     </div>
 
                   </div>
@@ -134,6 +134,7 @@
     input.value = value;
   }
 </script>
+<script src="{% static 'js/cart.js' %}"></script>
 
 {% include "accessories/footer.html" %}
 {% endblock content %}
