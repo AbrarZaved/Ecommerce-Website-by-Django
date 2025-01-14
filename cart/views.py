@@ -1,6 +1,8 @@
+from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 import json
+from authentication.models import Addressbook
 from cart.models import Cart
 from product.models import Product
 from django.contrib import messages
@@ -10,7 +12,8 @@ from django.contrib import messages
 
 def view_cart(request):
     carts = Cart.objects.filter(user=request.user)
-    return render(request, "cart/cart.html", {"carts": carts})
+    addresses = Addressbook.objects.filter(user=request.user)
+    return render(request, "cart/cart.html", {"carts": carts, "addresses": addresses})
 
 
 def add_cart(request, slug=None):
@@ -45,7 +48,7 @@ def add_cart(request, slug=None):
     if cart_product.exists():
         cart_product.update(
             user=request.user,
-            selling_price=selling_price,
+            selling_price=(selling_price * quantity),
             size=size,
             quantity=quantity,
         )
@@ -57,7 +60,7 @@ def add_cart(request, slug=None):
     Cart.objects.create(
         user=request.user,
         product=product,
-        selling_price=selling_price,
+        selling_price=(selling_price * quantity),
         size=size,
         quantity=quantity,
     )
@@ -69,4 +72,31 @@ def add_cart(request, slug=None):
 def delete_cart_item(request, boom):
     item = Cart.objects.get(pk=boom)
     item.delete()
+    messages.success(request,"Item Removed from Cart")
     return redirect("cart")
+
+
+def update_cart(request):
+    data = json.loads(request.body)
+    size = data.get("size")
+    quantity = data.get("quantity")
+    slug = data.get("productName")
+    price = data.get("newPrice")
+    print(price)
+    discount_price = data.get("discount_price")
+    if not all([slug, price, size, quantity, discount_price]):
+        return JsonResponse({"message": "Invalid data provided"}, status=400)
+    product = Product.objects.get(slug=slug)
+    cart_product = Cart.objects.filter(product__slug=slug)
+
+    cart_product.update(
+        size=size,
+        quantity=quantity,
+        selling_price=price,
+        discount_price=discount_price if quantity >= 3 else 0,
+    )
+    total_price = Cart.objects.filter(user=request.user).aggregate(
+        total=Sum("selling_price")
+    )["total"]
+
+    return JsonResponse({"success": True, "total_price": total_price}, safe=False)

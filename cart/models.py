@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from authentication.models import Customer
 from product.models import Product
@@ -13,7 +15,8 @@ class Cart(models.Model):
     size = models.CharField(max_length=50, default="S")
     selling_price = models.PositiveIntegerField(default=0)
     discount_price = models.PositiveIntegerField(default=0)
-    created_at=models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.user)
+

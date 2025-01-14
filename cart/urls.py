@@ -9,4 +9,5 @@ urlpatterns = [
     ),
     path("add_cart/<slug:slug>", csrf_exempt(views.add_cart), name="add_cart"),
     path("add_cart", csrf_exempt(views.add_cart), name="add_cart"),
+    path("update_cart", csrf_exempt(views.update_cart), name="update_cart"),
 ]

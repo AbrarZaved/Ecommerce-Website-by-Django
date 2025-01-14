@@ -33,21 +33,21 @@
                       <img src="{{cart.product.images}}" class="img-fluid rounded-3" alt="Cotton T-shirt">
                     </div>
                     <div class="col-md-3 col-lg-3 col-xl-3">
-                      <a href="{% url 'product_details' cart.product.slug %}"><h6 class="text-muted">{{cart.product.title}}</h6></a>
+                      <a href="{% url 'product_details' cart.product.slug %}"><h6 class="text-muted" data-value="{{cart.product.slug}}">{{cart.product.title}}</h6></a>
                       <h6 class="mb-0">{{cart.product.sub_category}}</h6>
                     </div>
                     <div class="col-md-3 col-lg-3  d-flex align-items-center">
                       <button style="border: none; background: none;" onclick="updateQuantity(this, -1)">
                         <i class="bi bi-dash"></i>
                       </button>
-                      <input id="form1" min="1" name="quantity" value="{{cart.quantity}}" type="number" class="form-control form-control-sm text-center mx-2" style="width: 60px;" />
+                      <input min="1" name="quantity" id="quantity-{{cart.product.slug}}" value="{{cart.quantity}}" data-value={{cart.product.slug}} type="number" class="form-control form-control-sm text-center mx-2" style="width: 60px;" />
                       <button style="border: none; background: none;" onclick="updateQuantity(this, 1)">
                         <i class="bi bi-plus"></i>
                       </button>
                     </div>
                     <div class="col-ml-1 col-ml-1 col-xl-1 text-center" style="margin-left: -15px; margin-right:25px">
                       <div class="btn-group">
-                       <select class="selectpicker btn btn-dark"  name="size_select" data-style="auto" style="min-width:20px; margin-right:2px">
+                       <select class="selectpicker btn btn-dark"  name="size_select" id="size-{{cart.product.slug}}" data-value="{{cart.product.slug}}" data-style="auto" style="min-width:20px; margin-right:2px">
                         <option selected value={{cart.size}}>{{cart.size}}</option>
                         {% for size in "S,M,L,XL,XXL"|split:"," %}
                         {% if cart.size != size %}
@@ -59,8 +59,10 @@
                       </div>
                     </div>
                     <div class="col-ml-3 col-ml-3 col-xl-2 text-center" style="margin-right:-20px">
-                      <h6 class="mb-0">$ {{cart.selling_price}}</h6>
-                      {% comment %} <h6 class="mb-0 font-weight-light text-decoration-line-through">$ {{cart.selling_price}}</h6> {% endcomment %}
+                      <h6 class="mb-0" id="price-{{cart.product.slug}}" data-price="{{cart.product.price}}">$ {{cart.selling_price}}</h6>
+                      
+                      <h6 class="mb-0 font-weight-light text-decoration-line-through" id="discount-{{cart.product.slug}}">{% if cart.discount_price == 0 %}{% else %}${{cart.discount_price}}{% endif %}</h6>
+
                     </div>
                     <div class="col-md-1 col-lg-1 col-xr-1 text-end">
                       <a href="{% url 'delete_cart_item' cart.id %}" style="color:red"><i class="bi bi-file-x-fill"></i></a>
@@ -86,17 +88,17 @@
 
                   <div class="d-flex justify-content-between mb-4">
                     <h5 class="text-uppercase">items {{carts|length}}</h5>
-                    <h5>&euro; 132.00</h5>
+                    <h5 id="total">&dollar; {{carts|sum}}</h5>
                   </div>
 
                   <h5 class="text-uppercase mb-3">Shipping</h5>
 
                   <div class="mb-4 pb-2">
+
                     <select data-mdb-select-init class="form-select">
-                      <option value="1">Standard-Delivery- &euro;5.00</option>
-                      <option value="2">Two</option>
-                      <option value="3">Three</option>
-                      <option value="4">Four</option>
+                      {% for address in addresses %}
+                      <option value="1">{{address.address}}, {{address.zone}}, {{address.city}}</option>
+                      {% endfor %}
                     </select>
                   </div>
 
@@ -127,14 +129,16 @@
   </div>
 </section>
 <script>
-  function updateQuantity(button, step) {
+function updateQuantity(button, step) {
     const input = button.parentNode.querySelector('input[type="number"]');
     let value = parseInt(input.value) || 1;
     value = Math.max(1, value + step); // Ensure the value doesn't go below 0
     input.value = value;
-  }
+    // Trigger a 'change' event on the input field
+    input.dispatchEvent(new Event('change'));
+}
 </script>
 <script src="{% static 'js/cart.js' %}"></script>
-
+{% include "accessories/notifications.html" %}
 {% include "accessories/footer.html" %}
 {% endblock content %}
