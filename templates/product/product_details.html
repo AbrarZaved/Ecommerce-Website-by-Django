@@ -20,17 +20,18 @@
             <p class="font-monospace fw-bold mt-3">Rating: <span>{{product.rating}}</span> <img src="{% static 'img/star.png' %}" alt="star" /></p>
             <div class="mt-4">
                 <!-- Add to Cart Form with Quantity and Size -->
-                <form method="post" action="#">
+                <form method="post">
                     {% csrf_token %}
                     <p class="fw-bold">Select Size & Quantity:</p>
                     <div class="row">
                         <div class="col-md-6">
                             <!-- Size Selection -->
                             <label>Sizes:</label>
+                            
                             <div>
                                 {% for size in "S,M,L,XL,XXL"|split:"," %}
                                 <div class="form-check form-check-inline" id="sizes">
-                                    <input class="form-check-input" type="radio" id="size{{ forloop.counter }}" name="size" value="{{ size }}" required>
+                                    <input class="form-check-input" type="radio" id="size{{ forloop.counter }}" name="size" value="{{ size }}" {% if size == "S" %}checked{% endif %} required>
                                     <label class="form-check-label" for="size{{ forloop.counter }}">{{ size }}</label>
                                 </div>
                                 {% endfor %}
@@ -43,10 +44,12 @@
                                 <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center mx-1" style="width: 60px;" value="1" min="1" required>
                             </div>
                         </div>
+                    
                     </div>
                     <div style="color:white">
-                    <button type="submit" class="btn btn-success btn-lg mt-3">Add to Cart</button>
+                    <button type="submit" class="btn btn-success btn-lg mt-3" id="add_cart" data-value="{{product.slug}}">Add to Cart</button>
                     <button type="submit" class="btn btn-info btn-lg mt-3 mr-2">Buy Now</button>
+        
                     </div>
                 </form>
             </div>
@@ -71,6 +74,9 @@
             {% endfor %}
         </div>
     </div>
+</div>
+<div id="message" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+  <!-- Toast messages will appear here -->
 </div>
 <script src="{% static 'js/product_details.js' %}"></script>
 {% endblock content %}

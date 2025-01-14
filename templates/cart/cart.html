@@ -4,6 +4,12 @@
 {% block content %}
 {% include "accessories/navbar.html" %}
 <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+<link crossorigin="anonymous" 
+          rel="stylesheet"
+          href=
+"https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          integrity=
+"sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC">
 
 <br><br>
 <section class="h-100 h-custom" style="background-color: #d2c9ff;">
@@ -17,39 +23,51 @@
                 <div class="p-5">
                   <div class="d-flex justify-content-between align-items-center mb-5">
                     <h1 class="fw-bold mb-0">Shopping Cart</h1>
-                    <h6 class="mb-0 text-muted">3 items</h6>
+                    <h6 class="mb-0 text-muted">{{carts|length}}</h6>
                   </div>
                   <hr class="my-4">
-
+                  {% for cart in carts %}
                   <div class="row mb-4 d-flex align-items-center">
-                    <div class="col-mr-4 col-lg-1 col-xr-3 text-center">
-                      <input type="checkbox" class="form-check-input" />
-                    </div>
                     <div class="col-md-2 col-lg-2 col-xl-2">
-                      <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img5.webp" class="img-fluid rounded-3" alt="Cotton T-shirt">
+                      <img src="{{cart.product.images}}" class="img-fluid rounded-3" alt="Cotton T-shirt">
                     </div>
                     <div class="col-md-3 col-lg-3 col-xl-3">
-                      <h6 class="text-muted">Shirt</h6>
-                      <h6 class="mb-0">Cotton T-shirt</h6>
+                      <a href="{% url 'product_details' cart.product.slug %}"><h6 class="text-muted">{{cart.product.title}}</h6></a>
+                      <h6 class="mb-0">{{cart.product.sub_category}}</h6>
                     </div>
                     <div class="col-md-3 col-lg-3  d-flex align-items-center">
                       <button style="border: none; background: none;" onclick="updateQuantity(this, -1)">
                         <i class="bi bi-dash"></i>
                       </button>
-                      <input id="form1" min="1" name="quantity" value="1" type="number" class="form-control form-control-sm text-center mx-2" style="width: 60px;" />
+                      <input id="form1" min="1" name="quantity" value="{{cart.quantity}}" type="number" class="form-control form-control-sm text-center mx-2" style="width: 60px;" />
                       <button style="border: none; background: none;" onclick="updateQuantity(this, 1)">
                         <i class="bi bi-plus"></i>
                       </button>
                     </div>
+                    <div class="col-ml-3 col-ml-2 col-xl-1 text-center">
+                      <div class="btn-group">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          {{cart.size}}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 50px;">
+                            <a class="dropdown-item" href="#">S</a>
+                            <a class="dropdown-item" href="#">M</a>
+                            <a class="dropdown-item" href="#">L</a>
+                            <a class="dropdown-item" href="#">XL</a>
+                            <a class="dropdown-item" href="#">XXL</a>
+                        </div>
+                      </div>
+                    </div>
                     <div class="col-ml-3 col-ml-3 col-xl-2 text-center">
-                      <h6 class="mb-0">&euro; 44.00</h6>
+                      <h6 class="mb-0">$ {{cart.selling_price}}</h6>
+                      {% comment %} <h6 class="mb-0 font-weight-light text-decoration-line-through">$ {{cart.selling_price}}</h6> {% endcomment %}
                     </div>
                     <div class="col-md-1 col-lg-1 col-xr-1 text-end">
-                      <a href="#" class="text-muted"><i class="bi bi-file-x-fill"></i></a>
+                      <a href="{% url 'delete_cart_item' cart.id %}" class="text-muted"><i class="bi bi-file-x-fill"></i></a>
                     </div>
 
                   </div>
-
+                  {% endfor %}
                   <hr class="my-4">
 
                   <div class="pt-5">
@@ -67,7 +85,7 @@
                   <hr class="my-4">
 
                   <div class="d-flex justify-content-between mb-4">
-                    <h5 class="text-uppercase">items 3</h5>
+                    <h5 class="text-uppercase">items {{carts|length}}</h5>
                     <h5>&euro; 132.00</h5>
                   </div>
 
@@ -86,8 +104,7 @@
 
                   <div class="mb-5">
                     <div data-mdb-input-init class="form-outline">
-                      <input type="text" id="form3Examplea2" class="form-control form-control-lg" />
-                      <label class="form-label" for="form3Examplea2">Enter your code</label>
+                      <input type="text" id="form3Examplea2" class="form-control form-control-lg"  placeholder="Enter Coupon Code"/>
                     </div>
                   </div>
 
@@ -99,7 +116,7 @@
                   </div>
 
                   <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-block btn-lg" data-mdb-ripple-color="dark">Checkout</button>
-                  <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg" data-mdb-ripple-color="dark">Continue Shopping</button>
+                  <a href="{% url 'index' %}" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg" data-mdb-ripple-color="dark">Continue Shopping</a>
                 </div>
               </div>
             </div>
