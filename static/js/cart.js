@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Hello");
+  var coupon = document.getElementById("coupon");
+  var discount = document.getElementById("discount");
+  var total = document.getElementById("total");
+  discount.style.display = "none";
   function fetch_values(quantity, productName, size, newPrice, discount_price) {
     fetch("update_cart", {
       method: "POST",
@@ -18,8 +22,20 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         if (data.success) {
           document.getElementById(
+            "sub_total"
+          ).textContent = `$ ${data.total_price}`;
+          document.getElementById(
             "total"
           ).textContent = `$ ${data.total_price}`;
+          if (data.total_price >= 1000) {
+            coupon.disabled = false;
+            coupon.placeholder = `Enter Coupon Code`;
+          } else {
+            coupon.disabled = true;
+            coupon.placeholder = `Min spend $1000`;
+          }
+          document.getElementById("coupon").value = ``;
+          discount.style.display = "none";
         }
       });
   }
@@ -61,6 +77,13 @@ document.addEventListener("DOMContentLoaded", function () {
       discountElement.style.display = "none";
       if (quantity >= 3) {
         newPrice = newPrice * quantity - quantity * 100;
+        if (newPrice >= 1000) {
+          coupon.disabled = false;
+          coupon.placeholder = `Enter Coupon Code`;
+        } else {
+          coupon.disabled = true;
+          coupon.placeholder = `Min spend $1000`;
+        }
         discount_price = quantity * 100;
         priceElement.textContent = `$ ${newPrice}`;
         discountElement.style.display = "block";
@@ -68,6 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         discount_price = 0;
         newPrice = newPrice * quantity;
+
         priceElement.textContent = `$ ${newPrice}`;
       }
 
@@ -91,6 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (quantity >= 3) {
         newPrice = newPrice * quantity - quantity * 100;
         var discount_price = quantity * 100;
+
         priceElement.textContent = `$ ${newPrice}`;
         discountElement.style.display = "block";
         discountElement.textContent = `$ ${100 * quantity}`;
@@ -101,5 +126,28 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       fetch_values(quantity, productName, size, newPrice, discount_price);
     });
+  });
+
+  coupon.addEventListener("input", (e) => {
+    coupon_name = e.target.value;
+    fetch("coupon_handle", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ coupon_name }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.discount_price) {
+          discount.style.display = "block";
+          discount.textContent = `You got $${data.discount_price} discount`;
+          total.textContent = `$ ${data.sub_total - data.discount_price}`;
+        } else {
+          discount.style.display = "none";
+          total.textContent = `$ ${data.sub_total}`;
+        }
+      });
   });
 });

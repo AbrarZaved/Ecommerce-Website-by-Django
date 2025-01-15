@@ -12,11 +12,19 @@
           integrity=
 "sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC">
 
-<br><br>
-<section class="h-100 h-custom" style="background-color: #d2c9ff;">
+<section class="h-100 h-custom" style="background: linear-gradient(to right, #4ca1af , #c4e0e5);">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12">
+        {% if carts|length == 0 %}
+        <div class="card text-center" style="border-radius: 15px;">
+          <div class="card-body p-5">
+            <h1 class="fw-bold mb-0">Your Cart is Empty</h1>
+            <p class="mt-3">Looks like you haven't added anything to your cart yet.</p>
+            <a href="{% url 'index' %}" class="btn btn-dark btn-lg mt-3">Go to Shop</a>
+          </div>
+        </div>
+        {% else %}
         <div class="card card-registration card-registration-2" style="border-radius: 15px;">
           <div class="card-body p-0">
             <div class="row g-0">
@@ -53,25 +61,20 @@
                         {% if cart.size != size %}
                           <option value="{{size}}">{{size}}</option>
                         {% endif %}
-
                         {% endfor %}
                       </select>
                       </div>
                     </div>
                     <div class="col-ml-3 col-ml-3 col-xl-2 text-center" style="margin-right:-20px">
                       <h6 class="mb-0" id="price-{{cart.product.slug}}" data-price="{{cart.product.price}}">$ {{cart.selling_price}}</h6>
-                      
                       <h6 class="mb-0 font-weight-light text-decoration-line-through" id="discount-{{cart.product.slug}}">{% if cart.discount_price == 0 %}{% else %}${{cart.discount_price}}{% endif %}</h6>
-
                     </div>
                     <div class="col-md-1 col-lg-1 col-xr-1 text-end">
-                      <a href="{% url 'delete_cart_item' cart.id %}" style="color:red"><i class="bi bi-file-x-fill"></i></a>
+                      <a href="{% url 'delete_cart_item' cart.product.slug %}" style="color:red"><i class="bi bi-file-x-fill"></i></a>
                     </div>
-
                   </div>
                   {% endfor %}
                   <hr class="my-4">
-
                   <div class="pt-5">
                     <h6 class="mb-0">
                       <a href="{% url 'index' %}" class="text-body">
@@ -85,38 +88,34 @@
                 <div class="p-5">
                   <h3 class="fw-bold mb-5 mt-2 pt-1">Summary</h3>
                   <hr class="my-4">
-
                   <div class="d-flex justify-content-between mb-4">
                     <h5 class="text-uppercase">items {{carts|length}}</h5>
-                    <h5 id="total">&dollar; {{carts|sum}}</h5>
+                    <h5 id="sub_total">&dollar; {{carts|sum}}</h5>
                   </div>
-
                   <h5 class="text-uppercase mb-3">Shipping</h5>
-
                   <div class="mb-4 pb-2">
-
                     <select data-mdb-select-init class="form-select">
                       {% for address in addresses %}
                       <option value="1">{{address.address}}, {{address.zone}}, {{address.city}}</option>
                       {% endfor %}
                     </select>
                   </div>
-
                   <h5 class="text-uppercase mb-3">Give code</h5>
-
                   <div class="mb-5">
                     <div data-mdb-input-init class="form-outline">
-                      <input type="text" id="form3Examplea2" class="form-control form-control-lg"  placeholder="Enter Coupon Code"/>
+                    {% if carts|sum >= 1000 %}
+                        <input type="text" id="coupon" class="form-control form-control-lg text-uppercase" placeholder="Enter Coupon Code" />
+                    {% else %}
+                        <input type="text" id="coupon" class="form-control form-control-lg text-uppercase" disabled placeholder="Min spend $1000" />
+                    {% endif %}
+                      <p class="text-danger" id='discount'></p>
                     </div>
                   </div>
-
                   <hr class="my-4">
-
                   <div class="d-flex justify-content-between mb-5">
                     <h5 class="text-uppercase">Total price</h5>
-                    <h5>&euro; 137.00</h5>
+                    <h5 id='total'>$ {{total_price}}</h5>
                   </div>
-
                   <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-block btn-lg" data-mdb-ripple-color="dark">Checkout</button>
                   <a href="{% url 'index' %}" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg" data-mdb-ripple-color="dark">Continue Shopping</a>
                 </div>
@@ -124,6 +123,7 @@
             </div>
           </div>
         </div>
+        {% endif %}
       </div>
     </div>
   </div>
