@@ -103,19 +103,20 @@ def delete_address(request, boom):
 
 def edit_address(request, boom):
     if request.method == "POST":
-        address_label = request.POST.get("address_label")
+        address_label = request.POST.get("address_label").lower()
         address = request.POST.get("address")
         city = request.POST.get("city")
         division = request.POST.get("division")
         zone = request.POST.get("zone")
 
-        address_instance = Addressbook.objects.get(pk=boom)
-        address_instance.address_label = address_label
-        address_instance.address = address
-        address_instance.city = city
-        address_instance.division = division
-        address_instance.zone = zone
-        address_instance.save()
+        address_instance = Addressbook.objects.filter(pk=boom)
+        address_instance.update(
+            address_label=address_label,
+            address=address,
+            city=city,
+            division=division,
+            zone=zone,
+        )
         messages.info(request, "Address Updated")
         return redirect("profile")
 
