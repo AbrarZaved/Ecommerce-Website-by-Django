@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return oldPrice + priceIncrease;
   }
 
-  var quantity, size, productName;
+  var quantity, size, productName, discount_price;
 
   // Event listener for quantity change
   document.querySelectorAll("[name=quantity]").forEach((item) => {
@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
         discountElement.style.display = "block";
         discountElement.textContent = `$ ${100 * quantity}`;
       } else {
+        discount_price = 0;
         newPrice = newPrice * quantity;
         priceElement.textContent = `$ ${newPrice}`;
       }
@@ -87,14 +88,14 @@ document.addEventListener("DOMContentLoaded", function () {
       discountElement.style.display = "none";
       price = parseInt(priceElement.getAttribute("data-price"));
       newPrice = calculatePrice(size, price);
-      var discount_price;
       if (quantity >= 3) {
         newPrice = newPrice * quantity - quantity * 100;
-        discount_price = quantity * 100;
+        var discount_price = quantity * 100;
         priceElement.textContent = `$ ${newPrice}`;
         discountElement.style.display = "block";
         discountElement.textContent = `$ ${100 * quantity}`;
       } else {
+        var discount_price = 0;
         newPrice = newPrice * quantity;
         priceElement.textContent = `$ ${newPrice}`;
       }

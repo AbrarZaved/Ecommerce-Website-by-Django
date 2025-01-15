@@ -84,9 +84,6 @@ def update_cart(request):
     price = data.get("newPrice")
     print(price)
     discount_price = data.get("discount_price")
-    if not all([slug, price, size, quantity, discount_price]):
-        return JsonResponse({"message": "Invalid data provided"}, status=400)
-    product = Product.objects.get(slug=slug)
     cart_product = Cart.objects.filter(product__slug=slug)
 
     cart_product.update(
