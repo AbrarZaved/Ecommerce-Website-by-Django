@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
       priceElement.textContent = `Price: $${newPrice}`;
     });
   });
-  console.log(newPrice, size, quantity);
   var cartButton = document.getElementById("add_cart");
   cartButton.addEventListener("click", (e) => {
     e.preventDefault();
@@ -96,6 +95,25 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error adding item to cart:", error);
+      });
+  });
+  var buyButton = document.getElementById("buy_now");
+  buyButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    var product_slug = e.target.dataset.value;
+
+    fetch(`http://127.0.0.1:8000/cart/buy_now`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ product_slug, newPrice, size, quantity }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success || data.success) {
+          window.location.href = "http://127.0.0.1:8000/cart/cart";
+        }
       });
   });
 });
