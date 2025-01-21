@@ -116,7 +116,12 @@
                     <h5 class="text-uppercase">Total price</h5>
                     <h5 id='total'>$ {{total_price}}</h5>
                   </div>
-                  <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-block btn-lg" data-mdb-ripple-color="dark">Checkout</button>
+                  <form action="{% url 'checkout' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-dark btn-block btn-lg" data-mdb-button-init data-mdb-ripple-init data-mdb-ripple-color="dark">
+                        Checkout
+                    </button>
+                 </form>
                   <a href="{% url 'index' %}" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg" data-mdb-ripple-color="dark">Continue Shopping</a>
                 </div>
               </div>

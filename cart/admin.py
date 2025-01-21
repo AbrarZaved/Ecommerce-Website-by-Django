@@ -1,4 +1,8 @@
+from urllib import response
 from django.contrib import admin
+from django.http import HttpResponse
+from ipykernel.pickleutil import can
+from matplotlib import table
 
 from cart.models import Cart, Coupon, Memo
 
@@ -30,5 +34,10 @@ class CouponAdmin(admin.ModelAdmin):
 
 @admin.register(Memo)
 class MemoAdmin(admin.ModelAdmin):
-    list_display = ["cart__user", "coupon__coupon_name"]
-    search_fields = ["cart__user", "cart_user__phone_number"]
+    list_display = ["user", "display_users", "total_price", "coupon", "total_discount"]
+    search_fields = ["cart__user__username", "cart__user__phone_number"]
+
+    def display_users(self, obj):
+        return ", ".join([str(cart.user) for cart in obj.cart.all()])
+
+    display_users.short_description = "Cart Name"

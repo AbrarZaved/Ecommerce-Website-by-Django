@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path("cart", views.view_cart, name="cart"),
+    path("checkout", views.checkout, name="checkout"),
     path(
         "delete_cart_item/<slug:slug>", views.delete_cart_item, name="delete_cart_item"
     ),
