@@ -1,3 +1,4 @@
+from ast import Add
 from random import choice
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
@@ -53,8 +54,8 @@ class Customer(AbstractBaseUser):
         null=True,
         blank=True,
     )
-    total_orders=models.IntegerField(default=0)
-    total_reviews=models.IntegerField(default=0)
+    total_orders = models.IntegerField(default=0)
+    total_reviews = models.IntegerField(default=0)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -103,3 +104,7 @@ class Addressbook(models.Model):
 def post_save_receiver(sender, instance, **kwargs):
     if instance.is_default:
         Addressbook.objects.exclude(id=instance.id).update(is_default=False)
+
+    total = Addressbook.objects.all().count()
+    if total == 1:
+        Addressbook.objects.all().update(is_default=True)

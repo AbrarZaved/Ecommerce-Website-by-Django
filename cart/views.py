@@ -17,7 +17,7 @@ from product.models import Product
 
 def view_cart(request):
     carts = Cart.objects.filter(user=request.user)
-    addresses = Addressbook.objects.filter(user=request.user)
+    addresses = Addressbook.objects.filter(user=request.user).order_by("-is_default")
     total_price = carts.aggregate(total=Sum("selling_price"))["total"] or 0
 
     return render(
@@ -175,15 +175,12 @@ def handle_cart_update(
 
 def checkout(request):
     if request.method == "POST":
-        # Retrieve the relevant order or cart details for the current user
         user = request.user
-        queryset = Memo.objects.filter(
-            user=user
-        )  # Assuming Memo is related to the user
+        queryset = Memo.objects.filter(user=user)
         for obj in queryset:
             total_price = obj.total_price
             total_discount = obj.total_discount
-
+            coupon = obj.coupon
         # Create PDF response
         response = HttpResponse(content_type="application/pdf")
         response["Content-Disposition"] = 'attachment; filename="cash_memo.pdf"'
@@ -192,10 +189,10 @@ def checkout(request):
         pdf.setTitle("Cash Memo")
 
         # Title in large text
-        pdf.setFont("Helvetica-Bold", 24)
+        pdf.setFont("Times-Bold", 24)
         pdf.drawCentredString(300, 770, "GOLPO GHOR")
 
-        pdf.setFont("Helvetica", 12)
+        pdf.setFont("Times-Roman", 12)
         pdf.drawString(100, 750, "--------------------------------")
 
         y_position = 730
@@ -216,14 +213,7 @@ def checkout(request):
         pdf.drawString(100, y_position, "--------------------------------")
         y_position -= 20
 
-        headers = [
-            "Product",
-            "Size",
-            "Quantity",
-            "Selling Price",
-            "Discount Price",
-            "Coupon",
-        ]
+        headers = ["Product", "Size", "Quantity", "Selling Price", "Discount Price"]
         data = [headers]
         sub_total = 0
 
@@ -233,14 +223,12 @@ def checkout(request):
                     cart.product.title,
                     cart.size,
                     cart.quantity,
-                    cart.selling_price,
-                    cart.discount_price,
+                    f"{cart.selling_price:.2f}",
+                    f"{cart.discount_price:.2f}",
                 ]
                 data.append(data_row)
-        
-        # Assuming total_price and total_discount are correctly aggregated
-        # Calculate the initial vertical position for the table
-        table_y_position = y_position - len(data) * 20  # Adjust for number of rows
+
+        table_y_position = y_position - len(data) * 20
         table = Table(data)
         table.setStyle(
             TableStyle(
@@ -248,8 +236,8 @@ def checkout(request):
                     ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
                     ("TEXTCOLOR", (0, 0), (-1, 0), colors.black),
                     ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                    ("ALIGN", (2, 0), (-1, -1), "CENTER"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ]
             )
         )
@@ -257,13 +245,30 @@ def checkout(request):
         table.wrapOn(pdf, 100, table_y_position)
         table.drawOn(pdf, 100, table_y_position)
 
-        # Subtotal, Discount, Total
         sub_total = total_price + total_discount
-        pdf.setFont("Helvetica-Bold", 12)
-        pdf.drawString(400, table_y_position - 40, f"Subtotal: {sub_total}")
-        pdf.drawString(400, table_y_position - 60, f"Total Discount: {total_discount}")
-        pdf.drawString(
-            400, table_y_position - 80, f"Total Amount To be Paid: {total_price}"
+        y_offset = 40
+
+        pdf.setFont("Times-Bold", 12)
+        pdf.drawRightString(
+            500, table_y_position - y_offset, f"Subtotal: {sub_total:.2f}"
+        )
+        y_offset += 20
+
+        if coupon:
+            pdf.drawRightString(
+                500, table_y_position - y_offset, f"Coupon Used: {coupon}"
+            )
+            y_offset += 20
+
+        pdf.drawRightString(
+            500, table_y_position - y_offset, f"Total Discount: {total_discount:.2f}"
+        )
+        y_offset += 20
+
+        pdf.drawRightString(
+            500,
+            table_y_position - y_offset,
+            f"Total Amount To be Paid: {total_price:.2f}",
         )
 
         pdf.save()

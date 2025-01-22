@@ -128,6 +128,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  document.querySelector("[name='address']").addEventListener("change", (e) => {
+    address_id = e.target.value;
+    console.log(address_id);
+    fetch(`http://127.0.0.1:8000/auth/shipping_address/${address_id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
+  });
+
   coupon.addEventListener("input", (e) => {
     coupon_name = e.target.value;
     fetch("coupon_handle", {
@@ -139,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data.discount_price) {
           discount.style.display = "block";
           discount.textContent = `You got $${data.discount_price} discount`;

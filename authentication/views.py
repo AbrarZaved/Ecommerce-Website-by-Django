@@ -79,9 +79,6 @@ def profile_attributes(request):
         if address.is_valid():
             address_instance = address.save(commit=False)
             address_instance.user = request.user
-            if Addressbook.objects.filter(user=address_instance.user).exists():
-                messages.error(request, "Address already Exists")
-                return redirect("profile")
             address_instance.save()
             messages.success(request, "Address Added")
             return redirect("profile")
@@ -130,3 +127,11 @@ def default_address_handle(request, boom):
     address.save()
     messages.success(request, "Default Address Changed")
     return redirect("profile")
+
+
+def shipping_address(request, boom):
+    address = Addressbook.objects.get(pk=boom)
+    address.is_default = True
+    Customer.objects.filter(id=request.user.id).update(default_address=address)
+    address.save()
+    return JsonResponse({"success": True}, safe=False)

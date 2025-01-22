@@ -94,9 +94,9 @@
                   </div>
                   <h5 class="text-uppercase mb-3">Shipping</h5>
                   <div class="mb-4 pb-2">
-                    <select data-mdb-select-init class="form-select">
+                    <select data-mdb-select-init class="form-select" name="address">
                       {% for address in addresses %}
-                      <option value="1">{{address.address}}, {{address.zone}}, {{address.city}}</option>
+                      <option value="{{address.id}}">{{address.address}}, {{address.zone}}, {{address.city}}</option>
                       {% endfor %}
                     </select>
                   </div>

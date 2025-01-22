@@ -14,6 +14,7 @@ urlpatterns = [
         name="default_address_handle",
     ),
     path("delete_address/<int:boom>", views.delete_address, name="delete_address"),
+    path("shipping_address/<int:boom>", views.shipping_address, name="shipping_address"),
     path("profile_attributes", views.profile_attributes, name="profile_attributes"),
     path("sign_in", csrf_exempt(views.sign_in), name="sign_in"),
     path("sign_up", csrf_exempt(views.sign_up), name="sign_up"),
