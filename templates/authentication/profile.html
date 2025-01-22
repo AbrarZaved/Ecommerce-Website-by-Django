@@ -72,7 +72,13 @@
                                 <label>Default Delivery Address</label>
                             </div>
                             <div class="col-md-6">
-                                <p>{{request.user.default_address.address}}, {{request.user.default_address.city}}, {{ request.user.default_address.division }} <span class="badge badge-{% if request.user.default_address.address_label == 'home'  %}warning{% else %}secondary{% endif %}">{{request.user.default_address.address_label|title}}</span></p>
+                                <p>
+                                    {% if request.user.default_address == None %}
+                                        Not Selected Yet
+                                    {% else %}
+                                        {{request.user.default_address.address}}, {{request.user.default_address.city}}, {{ request.user.default_address.division }} <span class="badge badge-{% if request.user.default_address.address_label == 'home'  %}warning{% else %}secondary{% endif %}">{{request.user.default_address.address_label|title}}</span>
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                         <div class="row">

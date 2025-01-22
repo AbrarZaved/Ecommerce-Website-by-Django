@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 import json
 from django.contrib import messages
+from numpy import add
 from authentication.forms import AddressForm, CustomerForm
 from authentication.models import Addressbook, Customer
 
@@ -37,8 +38,9 @@ def sign_up(request):
         phone_number = data.get("registerPhone")
         password = data.get("registerPassword")
         if Customer.objects.filter(phone_number=phone_number).exists():
-            messages.success(request, "Phone Number is Already Registered")
-            return redirect("index")
+            return JsonResponse(
+                {"success": False, "toast_message": "Invalid credentials"}
+            )
         user = Customer.objects.create_user(
             phone_number=phone_number, password=password
         )
@@ -93,6 +95,10 @@ def profile_attributes(request):
 
 def delete_address(request, boom):
     address = Addressbook.objects.get(pk=boom)
+    if address.is_default:
+        address.is_default = False
+        Customer.objects.filter(id=request.user.id).update(default_address=None)
+        address.save()
     address.delete()
     messages.success(request, "Address Deleted")
     return redirect("profile")

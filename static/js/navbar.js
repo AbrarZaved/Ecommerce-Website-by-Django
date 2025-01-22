@@ -5,16 +5,25 @@ document.addEventListener("DOMContentLoaded", function () {
   if (localStorage.getItem("loggedIn") === "true") {
     notifications("Successfully Logged In", "loggedIn", "success");
   }
+  if (localStorage.getItem("loggedIn") === "false") {
+    notifications("Invalid Credentials", "loggedIn", "error");
+    $("#exampleModalCenter").modal("show");
+  }
+  if (localStorage.getItem("regDone") === "false") {
+    notifications("User Alerady Exists", "loggedIn", "error");
+    $("#exampleModalCenter").modal("show");
+  }
   if (localStorage.getItem("regDone") === "true") {
     notifications(
-      "Registration Successfull. Please complete your Profile",
+      "Registration Successful. Please complete your Profile",
       "regDone",
       "info"
     );
   }
+
   function notifications(topic, value, tag) {
-    message.innerHTML += `<div data-message="${topic}"
-        data-level="${tag}" class="toast">
+    message.innerHTML += `
+      <div data-message="${topic}" data-level="${tag}" class="toast">
       </div>`;
     localStorage.removeItem(`${value}`); // Remove the flag after showing the message
   }
@@ -25,16 +34,24 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     var loginPhone = document.getElementById("loginPhone").value;
     var loginPassword = document.getElementById("loginPassword").value;
+
     fetch("http://127.0.0.1:8000/auth/sign_in", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ loginPhone, loginPassword }),
-    }).then(() => {
-      localStorage.setItem("loggedIn", "true"); // Set flag indicating successful login
-      window.location.href = "/index"; // Redirect to the 'index' page
-    });
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          localStorage.setItem("loggedIn", "true");
+          window.location.href = "/index";
+        } else {
+          localStorage.setItem("loggedIn", "false");
+          location.reload();
+        }
+      });
   });
 
   // Register logic
@@ -43,17 +60,23 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     var registerPhone = document.getElementById("registerPhone").value;
     var registerPassword = document.getElementById("registerPassword").value;
+
     fetch("http://127.0.0.1:8000/auth/sign_up", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ registerPhone, registerPassword }),
-    }).then(() => {
-      localStorage.setItem("regDone", "true");
-      window.location.href = "/index";
-    });
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          localStorage.setItem("regDone", "true");
+          window.location.href = "/index";
+        } else {
+          localStorage.setItem("regDone", "false");
+          location.reload();
+        }
+      });
   });
-
-   
 });
