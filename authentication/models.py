@@ -101,10 +101,12 @@ class Addressbook(models.Model):
 
 
 @receiver(post_save, sender=Addressbook)
-def post_save_receiver(sender, instance, **kwargs):
-    if instance.is_default:
+def post_save_receiver(sender, instance, created, **kwargs):
+    if created and Addressbook.objects.count() == 1:
+        # If this is the first Addressbook entry, set it as default
+        instance.is_default = True
+        instance.save()
+        Customer.objects.filter(id=instance.user.id).update(default_address=instance)
+    elif instance.is_default:
+        # If an address is marked as default, unmark others
         Addressbook.objects.exclude(id=instance.id).update(is_default=False)
-
-    total = Addressbook.objects.all().count()
-    if total == 1:
-        Addressbook.objects.all().update(is_default=True)
