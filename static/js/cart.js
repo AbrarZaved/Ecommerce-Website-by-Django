@@ -159,4 +159,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
   });
+
+  // document.getElementById("checkout").addEventListener("click", (e) => {
+  //   fetch("post_checkout")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data.success) {
+  //         window.location.href = "http://127.0.0.1:8000/index";
+  //       }
+  //     });
+  // });
 });

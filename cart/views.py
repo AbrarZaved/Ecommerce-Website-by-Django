@@ -148,10 +148,10 @@ def handle_cart_update(
         cart_product.selling_price = (selling_price or product.price) * quantity
         cart_product.size = size
         cart_product.quantity = quantity
-        cart_product.save()  # Save the instance to trigger the post_save signal
+        cart_product.save()
 
         response = {
-            "success": False,  # Indicates update rather than create
+            "success": False,
             "id": product.id,
             "product_name": product.title,
         }
@@ -163,11 +163,12 @@ def handle_cart_update(
             size=size,
             quantity=quantity,
         )
-
+        total_item = Cart.objects.filter(user=request.user).count()
         response = {
             "success": True,  # Indicates a new entry was created
             "id": product.id,
             "product_name": product.title,
+            "total_item": total_item,
         }
 
     return JsonResponse(response, safe=False)
@@ -250,7 +251,7 @@ def checkout(request):
 
         pdf.setFont("Times-Bold", 12)
         pdf.drawRightString(
-            500, table_y_position - y_offset, f"Subtotal: {sub_total:.2f}"
+            500, table_y_position - y_offset, f"Subtotal: ${sub_total:.2f}"
         )
         y_offset += 20
 
@@ -261,14 +262,14 @@ def checkout(request):
             y_offset += 20
 
         pdf.drawRightString(
-            500, table_y_position - y_offset, f"Total Discount: {total_discount:.2f}"
+            500, table_y_position - y_offset, f"Total Discount: ${total_discount:.2f}"
         )
         y_offset += 20
 
         pdf.drawRightString(
             500,
             table_y_position - y_offset,
-            f"Total Amount To be Paid: {total_price:.2f}",
+            f"Total Amount To be Paid: ${total_price:.2f}",
         )
 
         pdf.save()

@@ -67,7 +67,7 @@
       <li class="nav-item {% if request.resolver_match.url_name == 'cart' %}active{% endif %}">
         {% if request.user.is_authenticated %}
         <a class="nav-link" href="{% url 'cart' %}">
-          <i class="bi bi-cart"></i> Cart
+          <i class="bi bi-cart"></i> Cart <span id="cart_item" class="badge rounded-pill badge-notification bg-danger">{% if total_item %}{{total_item}}{% else %}</span>{% endif %}
         </a>
         {% else %}
         <a class="nav-link" href="#" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">

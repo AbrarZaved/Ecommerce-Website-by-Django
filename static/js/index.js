@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
     toast.setAttribute("aria-atomic", "true");
 
     const isSuccess = data.success;
+    if (isSuccess) {
+      document.getElementById("cart_item").textContent = `${data.total_item}`;
+    }
     toast.style.backgroundColor = isSuccess ? "#007bff" : "#790004"; // Success or error color
     toast.innerHTML = `${data.product_name} ${
       isSuccess ? "added to your cart!" : "is already in your cart!"
@@ -53,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then((res) => res.json())
         .then((data) => {
+          
           render_data(data);
         })
         .catch((error) => {

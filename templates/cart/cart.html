@@ -94,11 +94,15 @@
                   </div>
                   <h5 class="text-uppercase mb-3">Shipping</h5>
                   <div class="mb-4 pb-2">
+                    {% if addresses %}
                     <select data-mdb-select-init class="form-select" name="address">
                       {% for address in addresses %}
                       <option value="{{address.id}}">{{address.address}}, {{address.zone}}, {{address.city}}</option>
                       {% endfor %}
                     </select>
+                    {% else %}
+                    <a href="{% url 'profile' %}" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-warning btn-block btn-lg" data-mdb-ripple-color="dark">Add Address</a>
+                    {% endif %}
                   </div>
                   <h5 class="text-uppercase mb-3">Give code</h5>
                   <div class="mb-5">

@@ -102,7 +102,7 @@ class Addressbook(models.Model):
 
 @receiver(post_save, sender=Addressbook)
 def post_save_receiver(sender, instance, created, **kwargs):
-    if created and Addressbook.objects.count() == 1:
+    if created and Addressbook.objects.filter(user=instance.user).count() == 1:
         # If this is the first Addressbook entry, set it as default
         instance.is_default = True
         instance.save()

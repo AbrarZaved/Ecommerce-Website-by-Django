@@ -25,11 +25,22 @@ def update_memo(sender, instance, **kwargs):
 
 @receiver(post_delete, sender=Cart)
 def delete_memo(sender, instance, **kwargs):
-    memo = Memo.objects.get(user=instance.user)
-    total_price = memo.cart.aggregate(total=models.Sum("selling_price"))["total"] or 0
-    discount_price = memo.cart.aggregate(total=models.Sum("discount_price"))["total"] or 0
+    try:
+        memo = Memo.objects.get(user=instance.user)
+        total_price = (
+            memo.cart.aggregate(total=models.Sum("selling_price"))["total"] or 0
+        )
+        discount_price = (
+            memo.cart.aggregate(total=models.Sum("discount_price"))["total"] or 0
+        )
 
-    memo.total_discount = discount_price
-    memo.total_price = total_price
-    if memo.cart.count() == 0:
-        memo.delete()
+        memo.total_discount = discount_price
+        memo.total_price = total_price
+
+        if memo.cart.count() == 0:
+            memo.delete()
+        else:
+            memo.save()
+    except Memo.DoesNotExist:
+        # Handle gracefully if no Memo exists
+        pass
