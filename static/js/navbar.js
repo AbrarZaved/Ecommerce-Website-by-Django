@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     $("#exampleModalCenter").modal("show");
   }
   if (localStorage.getItem("regDone") === "false") {
-    notifications("User Alerady Exists", "loggedIn", "error");
+    notifications("User Alerady Exists", "regDone", "error");
     $("#exampleModalCenter").modal("show");
   }
   if (localStorage.getItem("regDone") === "true") {
