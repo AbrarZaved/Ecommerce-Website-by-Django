@@ -184,10 +184,11 @@ def checkout(request):
             coupon = obj.coupon
         # Create PDF response
         response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = 'attachment; filename="cash_memo.pdf"'
+        response["Content-Disposition"] = f'attachment; filename="invoice_of_{user.name}.pdf"'
+        
 
         pdf = canvas.Canvas(response, pagesize=letter)
-        pdf.setTitle("Cash Memo")
+        pdf.setTitle("Invoice")
 
         # Title in large text
         pdf.setFont("Times-Bold", 24)
@@ -214,7 +215,7 @@ def checkout(request):
         pdf.drawString(100, y_position, "--------------------------------")
         y_position -= 20
 
-        headers = ["Product", "Size", "Quantity", "Selling Price", "Discount Price"]
+        headers = ["Products", "Size", "Quantity", "Price", "Discount Price"]
         data = [headers]
         sub_total = 0
 
@@ -234,8 +235,8 @@ def checkout(request):
         table.setStyle(
             TableStyle(
                 [
-                    ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
-                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.black),
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.black),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                     ("GRID", (0, 0), (-1, -1), 1, colors.black),
                     ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
                     ("ALIGN", (0, 0), (-1, -1), "CENTER"),

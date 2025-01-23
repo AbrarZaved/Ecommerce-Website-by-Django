@@ -1,9 +1,6 @@
-# cart/signals.py
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from numpy import rec
-from openpyxl.styles.builtins import total
 from .models import Cart, Memo
 
 
