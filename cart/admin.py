@@ -34,7 +34,7 @@ class CouponAdmin(admin.ModelAdmin):
 
 @admin.register(Memo)
 class MemoAdmin(admin.ModelAdmin):
-    list_display = ["user", "display_users", "total_price", "coupon", "total_discount"]
+    list_display = ["user", "display_users", "total_price", "coupon", "total_discount", "created_at"]  
     search_fields = ["cart__user__username", "cart__user__phone_number"]
 
     def display_users(self, obj):

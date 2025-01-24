@@ -1,3 +1,6 @@
 .env
 product_entry.py 
 product_data.csv
+package-lock.json
+node_modules/
+package.json

@@ -1,16 +1,13 @@
-from django.db.models import F, Sum
-from django.http import HttpResponse, JsonResponse
+from django.db.models import Sum
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 import json
-from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from reportlab.platypus import Table, TableStyle
 from authentication.models import Addressbook
 from cart.models import Cart, Coupon, Memo
 from product.models import Product
+from pytz import timezone
+import datetime
 
 # Create your views here.
 
@@ -19,7 +16,7 @@ def view_cart(request):
     carts = Cart.objects.filter(user=request.user)
     addresses = Addressbook.objects.filter(user=request.user).order_by("-is_default")
     total_price = carts.aggregate(total=Sum("selling_price"))["total"] or 0
-
+    Memo.objects.filter(user=request.user).update(coupon=None)
     return render(
         request,
         "cart/cart.html",
@@ -175,103 +172,38 @@ def handle_cart_update(
 
 
 def checkout(request):
-    if request.method == "POST":
-        user = request.user
-        queryset = Memo.objects.filter(user=user)
-        for obj in queryset:
-            total_price = obj.total_price
-            total_discount = obj.total_discount
-            coupon = obj.coupon
-        # Create PDF response
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="invoice_of_{user.name}.pdf"'
-        
-
-        pdf = canvas.Canvas(response, pagesize=letter)
-        pdf.setTitle("Invoice")
-
-        # Title in large text
-        pdf.setFont("Times-Bold", 24)
-        pdf.drawCentredString(300, 770, "GOLPO GHOR")
-
-        pdf.setFont("Times-Roman", 12)
-        pdf.drawString(100, 750, "--------------------------------")
-
-        y_position = 730
-
-        if queryset.exists():
-            first_obj = queryset.first()
-            pdf.drawString(100, y_position, f"Name: {first_obj.user.name}")
-            y_position -= 20
-            pdf.drawString(
-                100, y_position, f"Phone Number: {first_obj.user.phone_number}"
-            )
-            y_position -= 20
-            pdf.drawString(
-                100, y_position, f"Address: {first_obj.user.default_address.address}"
-            )
-            y_position -= 20
-
-        pdf.drawString(100, y_position, "--------------------------------")
-        y_position -= 20
-
-        headers = ["Products", "Size", "Quantity", "Price", "Discount Price"]
-        data = [headers]
-        sub_total = 0
-
-        for obj in queryset:
-            for cart in obj.cart.all():
-                data_row = [
-                    cart.product.title,
-                    cart.size,
-                    cart.quantity,
-                    f"{cart.selling_price:.2f}",
-                    f"{cart.discount_price:.2f}",
-                ]
-                data.append(data_row)
-
-        table_y_position = y_position - len(data) * 20
-        table = Table(data)
-        table.setStyle(
-            TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, 0), colors.black),
-                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                    ("FONTNAME", (0, 0), (-1, 0), "Times-Bold"),
-                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ]
-            )
-        )
-
-        table.wrapOn(pdf, 100, table_y_position)
-        table.drawOn(pdf, 100, table_y_position)
-
-        sub_total = total_price + total_discount
-        y_offset = 40
-
-        pdf.setFont("Times-Bold", 12)
-        pdf.drawRightString(
-            500, table_y_position - y_offset, f"Subtotal: ${sub_total:.2f}"
-        )
-        y_offset += 20
-
-        if coupon:
-            pdf.drawRightString(
-                500, table_y_position - y_offset, f"Coupon Used: {coupon}"
-            )
-            y_offset += 20
-
-        pdf.drawRightString(
-            500, table_y_position - y_offset, f"Total Discount: ${total_discount:.2f}"
-        )
-        y_offset += 20
-
-        pdf.drawRightString(
-            500,
-            table_y_position - y_offset,
-            f"Total Amount To be Paid: ${total_price:.2f}",
-        )
-
-        pdf.save()
-        return response
+    memo = Memo.objects.filter(user=request.user).values_list(
+        "cart__product__title",
+        "cart__size",
+        "cart__quantity",
+        "cart__selling_price",
+        "cart__discount_price",
+    )
+    created_at = Memo.objects.get(user=request.user).created_at
+    dhaka_tz = timezone('Asia/Dhaka')
+    created_at = created_at.astimezone(dhaka_tz).strftime("%Y-%m-%d %I:%M:%S %p")
+    total_discount = Memo.objects.get(user=request.user).total_discount
+    total_price = Memo.objects.get(user=request.user).total_price
+    coupon = (
+        Memo.objects.get(user=request.user).coupon.coupon_name
+        if Memo.objects.get(user=request.user).coupon
+        else None
+    )
+    user_name = request.user.name
+    user_phone_number = request.user.phone_number
+    user_email = request.user.email
+    user_address = request.user.default_address.address
+    items = [
+        total_discount,
+        total_price,
+        coupon,
+        user_name,
+        user_phone_number,
+        user_email,
+        user_address,
+        created_at,
+    ]
+    memo = list(memo)
+    memo.append(items)
+    # Cart.objects.filter(user=request.user).delete()
+    return JsonResponse(memo, safe=False)

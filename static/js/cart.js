@@ -160,13 +160,101 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
-  // document.getElementById("checkout").addEventListener("click", (e) => {
-  //   fetch("post_checkout")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.success) {
-  //         window.location.href = "http://127.0.0.1:8000/index";
-  //       }
-  //     });
-  // });
+  document.getElementById("checkout").addEventListener("click", () => {
+    fetch("checkout")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Fetched Data:", data);
+        var n = data.length;
+        // Transform the data to match the table format
+        const tableData = data.slice(0, n - 1).map((item, index) => [
+          index + 1, // Serial Number
+          item[0] ? item[0] : "Unknown Title", // Title
+          item[1] ? `         ${item[1]}` : "     No Size Info",
+          item[2] ? `     ${item[2]}` : 0, // Quantity
+          item[3] ? item[3] : 0, // Price
+          item[4] ? item[4] : 0, // Discount Price
+        ]);
+
+        // Safely handle the address and other contact info
+        const props = {
+          outputType: jsPDFInvoiceTemplate.OutputType.Save,
+          returnJsPDFDocObject: true,
+          fileName: `Invoice_of_${
+            data[n - 1][3] ? data[n - 1][3] : "Unknown Client"
+          }`,
+          orientationLandscape: false,
+          compress: true,
+          business: {
+            name: "Golpo Ghor",
+            address: "Kadiganj, Bornali, Rajshahi",
+            phone: "01728150570",
+            email: "golpoghor@gmail.com",
+            website: "www.golpoghor.al",
+          },
+          contact: {
+            label: "Invoice issued for:",
+            name: data[n - 1][3] ? data[n - 1][3] : "Unknown Client",
+            address: data[n - 1][6] ? data[n - 1][6].toString() : "N/A",
+            phone: data[n - 1][4] ? data[n - 1][4] : "N/A",
+            email: data[n - 1][5] ? data[n - 1][5] : "N/A",
+          },
+          invoice: {
+            label: "Invoice #: ",
+            num: 19,
+            invDate: `Payement Date: ${
+              data[n - 1][7] ? data[n - 1][7] : "Unknown Date"
+            }`,
+            invGenDate: `Invoice Date: ${
+              data[n - 1][7] ? data[n - 1][7] : "Unknown Date"
+            }`,
+            header: [
+              { title: "#" },
+              { title: `Products` },
+              { title: `      Size` },
+              { title: "Quantity" },
+              { title: "Price" },
+              { title: "Discount Price" },
+            ],
+            table: tableData,
+            additionalRows: [
+              {
+                col1: "Total:",
+                col2: "145,250.50",
+                col3: "ALL",
+                style: {
+                  fontSize: 14, //optional, default 12
+                },
+              },
+              {
+                col1: "VAT:",
+                col2: "20",
+                col3: "%",
+                style: {
+                  fontSize: 10, //optional, default 12
+                },
+              },
+              {
+                col1: "SubTotal:",
+                col2: "116,199.90",
+                col3: "ALL",
+                style: {
+                  fontSize: 10, //optional, default 12
+                },
+              },
+            ],
+            invDescLabel: "Invoice Note",
+            invDesc:
+              "Thank you for your purchase! If you have any questions, feel free to reach out to us at the provided contact details.",
+          },
+          footer: {
+            text: "This invoice is generated electronically and is valid without a signature or stamp.",
+          },
+          pageEnable: true,
+          pageLabel: "Page ",
+        };
+
+        jsPDFInvoiceTemplate.default(props);
+      });
+  });
 });

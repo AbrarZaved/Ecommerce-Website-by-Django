@@ -1,3 +1,4 @@
+from venv import create
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
@@ -41,6 +42,7 @@ class Memo(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE, null=True, blank=True)
     total_price = models.PositiveIntegerField(default=0)
     total_discount = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         first_cart = self.cart.first()

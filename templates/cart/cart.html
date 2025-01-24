@@ -5,6 +5,7 @@
 {% load custom_filter %}
 {% include "accessories/navbar.html" %}
 <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+<script src="https://unpkg.com/jspdf-invoice-template@1.4.0/dist/index.js"></script>
 <link crossorigin="anonymous" 
           rel="stylesheet"
           href=
@@ -120,12 +121,9 @@
                     <h5 class="text-uppercase">Total price</h5>
                     <h5 id='total'>$ {{total_price}}</h5>
                   </div>
-                  <form action="{% url 'checkout' %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-dark btn-block btn-lg" data-mdb-button-init data-mdb-ripple-init data-mdb-ripple-color="dark">
+                    <button type="submit" id='checkout' class="btn btn-dark btn-block btn-lg" data-mdb-button-init data-mdb-ripple-init data-mdb-ripple-color="dark">
                         Checkout
                     </button>
-                 </form>
                   <a href="{% url 'index' %}" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg" data-mdb-ripple-color="dark">Continue Shopping</a>
                 </div>
               </div>
@@ -146,7 +144,10 @@ function updateQuantity(button, step) {
     // Trigger a 'change' event on the input field
     input.dispatchEvent(new Event('change'));
 }
+
+
 </script>
+
 <script src="{% static 'js/cart.js' %}"></script>
 {% include "accessories/notifications.html" %}
 {% include "accessories/footer.html" %}
