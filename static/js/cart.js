@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const { jsPDF } = window.jspdf;
   console.log("Hello");
   var coupon = document.getElementById("coupon");
   var discount = document.getElementById("discount");
@@ -164,97 +165,125 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("checkout")
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched Data:", data);
-        var n = data.length;
-        // Transform the data to match the table format
-        const tableData = data.slice(0, n - 1).map((item, index) => [
-          index + 1, // Serial Number
-          item[0] ? item[0] : "Unknown Title", // Title
-          item[1] ? `         ${item[1]}` : "     No Size Info",
-          item[2] ? `     ${item[2]}` : 0, // Quantity
-          item[3] ? item[3] : 0, // Price
-          item[4] ? item[4] : 0, // Discount Price
-        ]);
+        console.log(data);
+        const pdf = new jsPDF();
+        // Business Information
+        pdf.setFontSize(16);
+        pdf.text("Golpo Ghor", 10, 10);
+        pdf.setFontSize(10);
+        pdf.text("Kadiganj, Bornali, Rajshahi", 10, 15);
+        pdf.text("Phone: 01728150570 | Email: golpoghor@gmail.com", 10, 20);
 
-        // Safely handle the address and other contact info
-        const props = {
-          outputType: jsPDFInvoiceTemplate.OutputType.Save,
-          returnJsPDFDocObject: true,
-          fileName: `Invoice_of_${
-            data[n - 1][3] ? data[n - 1][3] : "Unknown Client"
-          }`,
-          orientationLandscape: false,
-          compress: true,
-          business: {
-            name: "Golpo Ghor",
-            address: "Kadiganj, Bornali, Rajshahi",
-            phone: "01728150570",
-            email: "golpoghor@gmail.com",
-            website: "www.golpoghor.al",
-          },
-          contact: {
-            label: "Invoice issued for:",
-            name: data[n - 1][3] ? data[n - 1][3] : "Unknown Client",
-            address: data[n - 1][6] ? data[n - 1][6].toString() : "N/A",
-            phone: data[n - 1][4] ? data[n - 1][4] : "N/A",
-            email: data[n - 1][5] ? data[n - 1][5] : "N/A",
-          },
-          invoice: {
-            label: "Invoice #: ",
-            num: 19,
-            invDate: `Payement Date: ${
-              data[n - 1][7] ? data[n - 1][7] : "Unknown Date"
-            }`,
-            invGenDate: `Invoice Date: ${
-              data[n - 1][7] ? data[n - 1][7] : "Unknown Date"
-            }`,
-            header: [
-              { title: "#" },
-              { title: `Products` },
-              { title: `      Size` },
-              { title: "Quantity" },
-              { title: "Price" },
-              { title: "Discount Price" },
-            ],
-            table: tableData,
-            additionalRows: [
-              {
-                col1: "Total:",
-                col2: "145,250.50",
-                col3: "ALL",
-                style: {
-                  fontSize: 14, //optional, default 12
-                },
-              },
-              {
-                col1: "VAT:",
-                col2: "20",
-                col3: "%",
-                style: {
-                  fontSize: 10, //optional, default 12
-                },
-              },
-              {
-                col1: "SubTotal:",
-                col2: "116,199.90",
-                col3: "ALL",
-                style: {
-                  fontSize: 10, //optional, default 12
-                },
-              },
-            ],
-            invDescLabel: "Invoice Note",
-            invDesc:
-              "Thank you for your purchase! If you have any questions, feel free to reach out to us at the provided contact details.",
-          },
-          footer: {
-            text: "This invoice is generated electronically and is valid without a signature or stamp.",
-          },
-          pageEnable: true,
-          pageLabel: "Page ",
-        };
+        // Invoice Details
+        pdf.setFontSize(12);
+        pdf.text(`Invoice #: ${new Date().getTime()}`, 140, 10);
+        pdf.text(`Date: ${new Date().toLocaleDateString()}`, 140, 20);
+        pdf.line(10, 75, 200, 75);
+        // Client Details Header
+        pdf.setFontSize(12);
+        pdf.text("Invoice issued to:", 10, 40);
+        pdf.setFontSize(10);
 
-        jsPDFInvoiceTemplate.default(props);
-      });
+        // Client Information
+        const client = data[data.length - 1];
+        pdf.text(`Name: ${client[3] || "Unknown"}`, 10, 45);
+        pdf.text(`Address: ${client[6] || "N/A"}`, 10, 50);
+        pdf.text(`Email: ${client[5] || "N/A"} | Phone: ${client[4]}`, 10, 55);
+
+        // Add a line under Client Information for separation
+        pdf.line(10, 75, 200, 75);
+
+        // Table Header
+        // Table Header
+        const tableColumns = [
+          "#",
+          "Product",
+          "Size",
+          "Quantity",
+          "Price",
+          "Discount Price",
+        ];
+
+        const tableRows = data
+          .slice(0, -1)
+          .map((item, index) => [
+            index + 1,
+            item[0] || "Unknown Title",
+            item[1] || "No Size Info",
+            item[2] || 0,
+            `$${item[3] || 0}`,
+            `$${item[4] || 0}`,
+          ]);
+
+        // AutoTable
+        pdf.autoTable({
+          head: [tableColumns],
+          body: tableRows,
+          startY: 80,
+          theme: "striped",
+          headStyles: {
+            fontSize: 12,
+            halign: "center",
+            fillColor: [33, 33, 33],
+          },
+          bodyStyles: { fontSize: 10, halign: "center" },
+          columnStyles: {
+            0: { halign: "center" },
+            4: { halign: "center" },
+            5: { halign: "center" },
+          },
+        });
+
+        // Add Totals Below the Table
+        const finalY = pdf.autoTable.previous.finalY + 10;
+        pdf.setFontSize(12);
+        pdf.setTextColor(100); // Muted text color
+        pdf.text(`Subtotal: `, 140, finalY, { align: "right" });
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`$${(client[1] + client[0]).toFixed(2)}`, 180, finalY, { align: "right" });
+        
+        if (client[2] != null) {
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`Coupon: `, 140, finalY + 10, { align: "right" });
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`${client[2]}`, 180, finalY + 10, { align: "right" });
+          
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`Discount: `, 140, finalY + 20, { align: "right" });
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`$${client[0].toFixed(2)}`, 180, finalY + 20, { align: "right" });
+          
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`Total: `, 140, finalY + 30, { align: "right" });
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`$${client[1].toFixed(2)}`, 180, finalY + 30, { align: "right" });
+        } else {
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`Discount: `, 140, finalY + 10, { align: "right" });
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`$${client[0].toFixed(2)}`, 180, finalY + 10, { align: "right" });
+          
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`Total: `, 140, finalY + 20, { align: "right" });
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`$${client[1].toFixed(2)}`, 180, finalY + 20, { align: "right" });
+        }
+
+        // Add a line under Totals for separation
+        pdf.setFontSize(10);
+        pdf.setTextColor(100); // Set color for the note text
+        pdf.text(
+          "Note: This is a system generated invoice and does not require a signature.",
+          10,
+          finalY + 45
+        );
+
+        // Draw the footer line
+        pdf.line(10, finalY + 40, 200, finalY + 40); // Line under the footer note
+
+        // Save the PDF
+        pdf.save(`invoice_of_${client[3] || "Unknown"}.pdf`);
+      })
+      .catch((err) => console.error(err));
   });
 });
