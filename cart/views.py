@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 import json
 from authentication.models import Addressbook
-from cart.models import Cart, Coupon, Memo
+from cart.models import Cart, Coupon, Memo, OrderHistory
 from product.models import Product
 from pytz import timezone
 import datetime
@@ -70,7 +70,7 @@ def update_cart(request):
     quantity = data.get("quantity")
     price = data.get("newPrice")
     discount_price = data.get("discount_price") if quantity >= 3 else 0
-
+    print(slug, size, quantity, price, discount_price)
     cart_product = Cart.objects.get(product__slug=slug, user=request.user)
     cart_product.size = size
     cart_product.quantity = quantity
@@ -142,7 +142,7 @@ def handle_cart_update(
 
     if cart_product:
         # Update fields directly on the instance
-        cart_product.selling_price = (selling_price or product.price) * quantity
+        cart_product.selling_price = selling_price or product.price
         cart_product.size = size
         cart_product.quantity = quantity
         cart_product.save()
@@ -156,7 +156,7 @@ def handle_cart_update(
         Cart.objects.create(
             user=request.user,
             product=product,
-            selling_price=(selling_price or product.price) * quantity,
+            selling_price=(selling_price or product.price),
             size=size,
             quantity=quantity,
         )
@@ -180,7 +180,7 @@ def checkout(request):
         "cart__discount_price",
     )
     created_at = Memo.objects.get(user=request.user).created_at
-    dhaka_tz = timezone('Asia/Dhaka')
+    dhaka_tz = timezone("Asia/Dhaka")
     created_at = created_at.astimezone(dhaka_tz).strftime("%Y-%m-%d %I:%M:%S %p")
     total_discount = Memo.objects.get(user=request.user).total_discount
     total_price = Memo.objects.get(user=request.user).total_price
@@ -205,5 +205,17 @@ def checkout(request):
     ]
     memo = list(memo)
     memo.append(items)
-    # Cart.objects.filter(user=request.user).delete()
+    products = list(
+        Memo.objects.get(user=request.user)
+        .cart.all()
+        .values("product__id", "selling_price", "quantity")
+    )
+    for product in products:
+        OrderHistory.objects.create(
+            user=request.user,
+            product=Product.objects.get(id=product["product__id"]),
+            quantity=product["quantity"],
+            price=product["selling_price"],
+        )
+    Cart.objects.filter(user=request.user).delete()
     return JsonResponse(memo, safe=False)

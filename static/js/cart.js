@@ -77,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
       var discountElement = document.getElementById(`discount-${productName}`);
       discountElement.style.display = "none";
       if (quantity >= 3) {
-        newPrice = newPrice * quantity - quantity * 100;
         if (newPrice >= 1000) {
           coupon.disabled = false;
           coupon.placeholder = `Enter Coupon Code`;
@@ -85,17 +84,14 @@ document.addEventListener("DOMContentLoaded", function () {
           coupon.disabled = true;
           coupon.placeholder = `Min spend $1000`;
         }
-        discount_price = quantity * 100;
-        priceElement.textContent = `$ ${newPrice}`;
+        priceElement.textContent = `$ ${newPrice * quantity - quantity * 100}`;
         discountElement.style.display = "block";
         discountElement.textContent = `$ ${100 * quantity}`;
       } else {
         discount_price = 0;
-        newPrice = newPrice * quantity;
-
-        priceElement.textContent = `$ ${newPrice}`;
+        priceElement.textContent = `$ ${newPrice*quantity}`;
       }
-
+      console.log(newPrice, quantity, productName, size, discount_price);
       fetch_values(quantity, productName, size, newPrice, discount_price);
     });
   });
@@ -114,9 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
       price = parseInt(priceElement.getAttribute("data-price"));
       newPrice = calculatePrice(size, price);
       if (quantity >= 3) {
-        newPrice = newPrice * quantity - quantity * 100;
-        var discount_price = quantity * 100;
-
         priceElement.textContent = `$ ${newPrice}`;
         discountElement.style.display = "block";
         discountElement.textContent = `$ ${100 * quantity}`;
@@ -211,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
             item[0] || "Unknown Title",
             item[1] || "No Size Info",
             item[2] || 0,
-            `$${item[3] || 0}`,
+            `$${item[3] + item[4] || 0}`,
             `$${item[4] || 0}`,
           ]);
 
@@ -240,33 +233,39 @@ document.addEventListener("DOMContentLoaded", function () {
         pdf.setTextColor(100); // Muted text color
         pdf.text(`Subtotal: `, 140, finalY, { align: "right" });
         pdf.setFont("helvetica", "bold");
-        pdf.text(`$${(client[1] + client[0]).toFixed(2)}`, 180, finalY, { align: "right" });
-        
+        pdf.text(`$${(client[1] + client[0]).toFixed(2)}`, 180, finalY, {
+          align: "right",
+        });
         if (client[2] != null) {
           pdf.setFont("helvetica", "normal");
-          pdf.text(`Coupon: `, 140, finalY + 10, { align: "right" });
+          pdf.text(`Coupon: `, 140, finalY + 5, { align: "right" });
           pdf.setFont("helvetica", "bold");
-          pdf.text(`${client[2]}`, 180, finalY + 10, { align: "right" });
-          
-          pdf.setFont("helvetica", "normal");
-          pdf.text(`Discount: `, 140, finalY + 20, { align: "right" });
-          pdf.setFont("helvetica", "bold");
-          pdf.text(`$${client[0].toFixed(2)}`, 180, finalY + 20, { align: "right" });
-          
-          pdf.setFont("helvetica", "normal");
-          pdf.text(`Total: `, 140, finalY + 30, { align: "right" });
-          pdf.setFont("helvetica", "bold");
-          pdf.text(`$${client[1].toFixed(2)}`, 180, finalY + 30, { align: "right" });
-        } else {
+          pdf.text(`${client[2]}`, 180, finalY + 5, { align: "right" });
           pdf.setFont("helvetica", "normal");
           pdf.text(`Discount: `, 140, finalY + 10, { align: "right" });
           pdf.setFont("helvetica", "bold");
-          pdf.text(`$${client[0].toFixed(2)}`, 180, finalY + 10, { align: "right" });
-          
+          pdf.text(`$${client[0].toFixed(2)}`, 180, finalY + 10, {
+            align: "right",
+          });
           pdf.setFont("helvetica", "normal");
-          pdf.text(`Total: `, 140, finalY + 20, { align: "right" });
+          pdf.text(`Total: `, 140, finalY + 15, { align: "right" });
           pdf.setFont("helvetica", "bold");
-          pdf.text(`$${client[1].toFixed(2)}`, 180, finalY + 20, { align: "right" });
+          pdf.text(`$${client[1].toFixed(2)}`, 180, finalY + 15, {
+            align: "right",
+          });
+        } else {
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`Discount: `, 140, finalY + 5, { align: "right" });
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`$${client[0].toFixed(2)}`, 180, finalY + 5, {
+            align: "right",
+          });
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`Total: `, 140, finalY + 10, { align: "right" });
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`$${client[1].toFixed(2)}`, 180, finalY + 10, {
+            align: "right",
+          });
         }
 
         // Add a line under Totals for separation
@@ -283,6 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Save the PDF
         pdf.save(`invoice_of_${client[3] || "Unknown"}.pdf`);
+        window.location.href = "http://127.0.0.1:8000/index";
       })
       .catch((err) => console.error(err));
   });

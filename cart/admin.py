@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from ipykernel.pickleutil import can
 from matplotlib import table
 
-from cart.models import Cart, Coupon, Memo
+from cart.models import Cart, Coupon, Memo, OrderHistory
 
 # Register your models here.
 
@@ -41,3 +41,13 @@ class MemoAdmin(admin.ModelAdmin):
         return ", ".join([str(cart.user) for cart in obj.cart.all()])
 
     display_users.short_description = "Cart Name"
+
+
+@admin.register(OrderHistory)
+class OrderHistoryAdmin(admin.ModelAdmin):
+    list_display = ["user", "product", "quantity", "price", "created_at"]
+    search_fields = ["user__username", "product__pid"]
+    list_filter = ["user"]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by("-created_at")

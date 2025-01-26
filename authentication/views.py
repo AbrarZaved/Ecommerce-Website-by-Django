@@ -11,6 +11,8 @@ from authentication.models import Addressbook, Customer
 # Django View
 from django.http import JsonResponse
 
+from cart.models import OrderHistory
+
 
 def sign_in(request):
     if request.method == "POST":
@@ -66,10 +68,16 @@ def profile_view(request):
     profile = CustomerForm(instance=user)
     address = AddressForm()
     addresses = Addressbook.objects.filter(user=request.user)
+    orders = OrderHistory.objects.filter(user=request.user).order_by("-created_at")
     return render(
         request,
         "authentication/profile.html",
-        {"profile": profile, "address": address, "addresses": addresses},
+        {
+            "profile": profile,
+            "address": address,
+            "addresses": addresses,
+            "orders": orders,
+        },
     )
 
 

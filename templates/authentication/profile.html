@@ -86,7 +86,7 @@
                                 <label>Total Orders</label>
                             </div>
                             <div class="col-md-6">
-                                <p>{{ request.user.total_orders }}</p>
+                                <p>{{ orders|length }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -138,31 +138,28 @@
                     <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
                         <div class="row">
                             <div class="col-md-12">
-                                <h5 class="mb-3">Your Orders</h5>
+                                <h5 class="mb-3">Your Recent Orders</h5>
                                 {% if orders %}
                                 <table class="table table-hover table-bordered">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th>#</th>
-                                            <th>Order ID</th>
+                                            <th class='text-xl-center'>#</th>
+                                            <th class='text-xl-center'>Order ID</th>
                                             <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Total</th>
-                                            <th>Actions</th>
+                                            <th>Product Name</th>
+                                            <th class='text-xl-center'>Quantity</th>
+                                            <th class='text-xl-center'>Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for order in orders %}
+                                        {% for order in orders|slice:":5" %}
                                         <tr>
                                             <th scope="row">{{ forloop.counter }}</th>
-                                            <td >{{ order.id }}</td>
-                                            <td>{{ order.date }}</td>
-                                            <td>{{ order.status }}</td>
-                                            <td>${{ order.total }}</td>
-                                            <td>
-                                                <button class="btn btn-info btn-sm" onclick="viewOrderDetails({{ order.id }})">View</button>
-                                                <button class="btn btn-danger btn-sm" onclick="cancelOrder({{ order.id }})">Cancel</button>
-                                            </td>
+                                            <td class='text-xl-center'>{{ order.id }}</td>
+                                            <td>{{ order.created_at }}</td>
+                                            <td><a href='{% url "product_details" order.product.slug %}' style='text-decoration: none;'>{{ order.product }}</a></td>
+                                            <td class='text-xl-center'>{{ order.quantity }}</td>
+                                            <td class='text-xl-center'>${{ order.price }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
