@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
         discountElement.textContent = `$ ${100 * quantity}`;
       } else {
         discount_price = 0;
-        priceElement.textContent = `$ ${newPrice*quantity}`;
+        priceElement.textContent = `$ ${newPrice * quantity}`;
       }
       console.log(newPrice, quantity, productName, size, discount_price);
       fetch_values(quantity, productName, size, newPrice, discount_price);
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
       price = parseInt(priceElement.getAttribute("data-price"));
       newPrice = calculatePrice(size, price);
       if (quantity >= 3) {
-        priceElement.textContent = `$ ${newPrice}`;
+        priceElement.textContent = `$ ${newPrice * quantity - quantity * 100}`;
         discountElement.style.display = "block";
         discountElement.textContent = `$ ${100 * quantity}`;
       } else {
