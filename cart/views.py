@@ -59,7 +59,7 @@ def add_cart(request, slug=None):
 
 def delete_cart_item(request, slug):
     Cart.objects.filter(product__slug=slug).delete()
-    messages.success(request, "Item Removed from Cart")
+    messages.info(request, "Item Removed from Cart")
     return redirect("cart")
 
 

@@ -15,6 +15,7 @@
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12">
         {% if carts|length == 0 %}
+        <br>
         <div class="card text-center" style="border-radius: 15px;">
           <div class="card-body p-5">
             <h1 class="fw-bold mb-0">Your Cart is Empty</h1>
@@ -39,8 +40,8 @@
                       <img src="{{cart.product.images}}" class="img-fluid rounded-3" alt="Cotton T-shirt">
                     </div>
                     <div class="col-md-3 col-lg-3 col-xl-3">
-                      <a href="{% url 'product_details' cart.product.slug %}"><h6 class="text-muted" data-value="{{cart.product.slug}}">{{cart.product.title}}</h6></a>
-                      <h6 class="mb-0">{{cart.product.sub_category}}</h6>
+                      <a href="{% url 'product_details' cart.product.slug %}" style="text-decoration:none;color:black;"><h6 data-value="{{cart.product.slug}}">{{cart.product.title}}</h6></a>
+                      <h6 class="mb-0 text-muted">{{cart.product.sub_category}}</h6>
                     </div>
                     <div class="col-md-3 col-lg-3  d-flex align-items-center">
                       <button style="border: none; background: none;" onclick="updateQuantity(this, -1)">

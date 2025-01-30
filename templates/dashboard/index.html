@@ -51,7 +51,7 @@
       <div class="card h-100">
         <img class="card-img-top" src="{{ product.images }}" alt="Product Image" style="height: 200px; object-fit: cover;">
         <div class="card-body d-flex flex-column">
-          <a href="{% url 'product_details' product.slug %}"><h5 class="card-title">{{ product.title }}</h5></a>
+          <a href="{% url 'product_details' product.slug %}" style="text-decoration:none;color:black"><h5 class="card-title">{{ product.title }}</h5></a>
             <p class="card-text text-muted">{{ product.product_details|details|safe|truncatewords:25}}</p>
           <div class="mt-auto d-flex justify-content-between">
             <p class="text-primary"><strong>$</strong>{{ product.price }}</p>

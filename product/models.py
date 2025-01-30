@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.text import slugify
 import uuid
 
+from authentication.models import Customer
+
 # Create your models here.
 
 
@@ -32,3 +34,14 @@ class Product(models.Model):
                 unique_slug = f"{base_slug}-{uuid.uuid4().hex[:8]}"
             self.slug = unique_slug
         super().save(*args, **kwargs)
+
+
+class product_review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    review = models.TextField()
+    rating = models.DecimalField(max_digits=5, decimal_places=1)
+    created_at = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.product)

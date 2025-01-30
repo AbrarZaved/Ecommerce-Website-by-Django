@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %}Product Details{% endblock title %}
 {% block content %}
+{% include "accessories/notifications.html" %}
 {% include "accessories/navbar.html" %}
 {% load custom_filters %}
 <br>
@@ -28,7 +29,6 @@
                         <div class="col-md-6">
                             <!-- Size Selection -->
                             <label>Sizes:</label>
-                            
                             <div>
                                 {% for size in "S,M,L,XL,XXL"|split:"," %}
                                 <div class="form-check form-check-inline" id="sizes">
@@ -57,6 +57,27 @@
         </div>
     </div>
     <br>
+    <div class="mt-5">
+        <h3 style="font-size: 1.8rem; font-weight: bold; color: #333; margin-bottom: 10px;">Customer Reviews</h3>
+        <div class="reviews">
+            {% if product_review_set %}
+            <ul class="list-group">
+                {% for review in product_review_set %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ review.user }}</strong>
+                        <span>{{ review.rating }} <img src="{% static 'img/star.png' %}" alt="star" style="width: 16px;"></span>
+                    </div>
+                    <p class='text-muted'>{{ review.review }}</p>
+                    <small class="text-muted">{{ review.created_at }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No reviews yet for this product. Be the first to review!</p>
+            {% endif %}
+        </div>
+    </div>
     <div class="mt-5">
         <!-- Additional Information or Related Products -->
         <h3 style="font-size: 1.8rem; font-weight: bold; color: #333; margin-bottom: 10px;">Discover More You’ll Love</h3>
@@ -89,7 +110,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Reviews Section -->
+    
 </div>
+
 <div id="message" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
   <!-- Toast messages will appear here -->
 </div>
