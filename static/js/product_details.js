@@ -53,9 +53,14 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         const message = document.getElementById("message");
         message.innerHTML = ""; // Clear previous toasts
-
+        if (data.success) {
+          document.getElementById(
+            "cart_item"
+          ).textContent = `${data.total_item}`;
+        }
         const toast = document.createElement("div");
         toast.classList.add("toast");
         toast.style.transition = "0.32s all ease-in-out";
