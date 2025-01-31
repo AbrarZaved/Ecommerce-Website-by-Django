@@ -59,7 +59,7 @@ def sign_up(request):
 def sign_out(request):
     logout(request)
     messages.success(request, "Log Out Successful")
-    return redirect("index")
+    return redirect(request.META.get('HTTP_REFERER', 'index'))
 
 
 @login_required

@@ -63,11 +63,22 @@
         </div>
         <div class="card-footer text-center d-flex justify-content-center">
           {% if request.user.is_authenticated %}
+          {% if product.out_of_stock %}
+          <a href="#" class="btn btn-secondary mr-2" disabled>
+            <i class="bi bi-bag"></i> Out of Stock
+          </a>
+          {% else %}
           <a href="#" class="btn btn-primary mr-2" data-value={{product.slug}} id="buy_now">
             <i class="bi bi-bag"></i> Buy Now
           </a>
           <a href="#" class="btn btn-success" id="add_cart" data-value={{product.slug}}>
             <i class="bi bi-cart-plus"></i> Add to Cart
+          </a>
+          {% endif %}
+          {% else %}
+          {% if product.out_of_stock %}
+          <a href="#" class="btn btn-secondary mr-2" disabled>
+            <i class="bi bi-bag"></i> Out of Stock
           </a>
           {% else %}
           <a href="#" class="btn btn-primary mr-2" data-toggle="modal" data-target="#exampleModalCenter">
@@ -76,6 +87,7 @@
           <a href="" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter">
             <i class="bi bi-cart-plus" ></i> Add to Cart
           </a>
+          {% endif %}
           {% endif %}
 
         </div>

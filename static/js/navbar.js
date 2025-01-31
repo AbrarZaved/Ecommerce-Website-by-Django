@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         if (data.success) {
           localStorage.setItem("loggedIn", "true");
-          window.location.href = "/index";
+          location.reload();
         } else {
           localStorage.setItem("loggedIn", "false");
           location.reload();
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         if (data.success) {
           localStorage.setItem("regDone", "true");
-          window.location.href = "/index";
+          location.reload();
         } else {
           localStorage.setItem("regDone", "false");
           location.reload();
