@@ -1,8 +1,5 @@
-from urllib import response
 from django.contrib import admin
-from django.http import HttpResponse
-from ipykernel.pickleutil import can
-from matplotlib import table
+
 
 from cart.models import Cart, Coupon, Memo, OrderHistory
 
