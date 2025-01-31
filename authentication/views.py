@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 import json
 from django.contrib import messages
-from numpy import add
 from authentication.forms import AddressForm, CustomerForm
 from authentication.models import Addressbook, Customer
 
