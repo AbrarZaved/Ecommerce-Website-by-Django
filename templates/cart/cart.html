@@ -133,6 +133,18 @@
     </div>
   </div>
 </section>
+<div class="modal fade" id="cartLoading" tabindex="-1" role="dialog" aria-labelledby="cartLoading" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="text-center">
+          <img src="{% static "img/Triangles@1x-1.0s-200px-200px.gif" %}" alt="Success" style="width: 100px;">
+          <p class="text-muted">Checkout on progess</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 function updateQuantity(button, step) {
     const input = button.parentNode.querySelector('input[type="number"]');
