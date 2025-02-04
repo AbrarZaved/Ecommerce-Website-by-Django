@@ -282,6 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Save the PDF
         pdf.save(`invoice_of_${client[3] || "Unknown"}.pdf`);
+        localStorage.setItem("cart", true);
         window.location.href = "http://127.0.0.1:8000/index";
       })
       .catch((err) => console.error(err));

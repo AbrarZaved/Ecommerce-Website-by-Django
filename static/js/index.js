@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then((res) => res.json())
         .then((data) => {
-          
           render_data(data);
         })
         .catch((error) => {
@@ -87,5 +86,14 @@ document.addEventListener("DOMContentLoaded", function () {
           console.error("Error adding item to cart:", error);
         });
     });
+  });
+  setTimeout(function () {
+    if (localStorage.getItem("cart") === "true") {
+      $("#cartSuccess").modal("show");
+      localStorage.removeItem("cart");
+      setTimeout(() => {
+        $("#cartSuccess").modal("hide");
+      }, 3000);
+    }
   });
 });
