@@ -151,15 +151,14 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="loginLoading" tabindex="-1" role="dialog" aria-labelledby="loginLoading" aria-hidden="true">
+<div class="modal fade" id="loginLoading" tabindex="-1" role="dialog" aria-labelledby="loginLoading" aria-hidden="true" style="background: rgba(0, 0, 0, 0.5);">
   <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <div class="text-center">
-          <img src="{% static "img/Dual Ball@1x-1.0s-200px-200px.gif" %}" alt="Success" style="width: 100px;">
-        </div>
+    <div class="modal-content" style="background: none; border: none; box-shadow: none;">
+      <div class="modal-body text-center" style="display: flex; justify-content: center; align-items: center; padding: 20px;">
+        <img src="{% static 'img/8e6f33126207a47f09f7c6ac533305-unscreen.gif' %}" alt="Loading" style="width: 250px; max-width: 100%;">
       </div>
     </div>
   </div>
 </div>
+
 <script src="{% static 'js/navbar.js' %}"></script>

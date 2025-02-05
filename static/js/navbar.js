@@ -30,8 +30,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Handling Authentication
   var loginSubmit = document.getElementById("loginSubmit");
-  loginSubmit.addEventListener("click", (e) => {
+  loginSubmit.addEventListener("click", async (e) => {
     e.preventDefault();
+    $("#loginLoading").modal("show");
+    const delay = () =>
+      new Promise((res) => {
+        $("#exampleModalCenter").modal("hide");
+        setTimeout(res, 1700);
+      });
+    await delay();
+
     var loginPhone = document.getElementById("loginPhone").value;
     var loginPassword = document.getElementById("loginPassword").value;
 
@@ -56,8 +64,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Register logic
   var registerSubmit = document.getElementById("registerSubmit");
-  registerSubmit.addEventListener("click", (e) => {
+  registerSubmit.addEventListener("click", async (e) => {
     e.preventDefault();
+    $("#loginLoading").modal("show");
+    const delay = () =>
+      new Promise((res) => {
+        $("#registerModal").modal("hide");
+        setTimeout(res, 1700);
+      });
+    await delay();
+
     var registerPhone = document.getElementById("registerPhone").value;
     var registerPassword = document.getElementById("registerPassword").value;
 

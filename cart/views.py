@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 import json
+from django.contrib.auth.decorators import login_required
 from authentication.models import Addressbook
 from cart.models import Cart, Coupon, Memo, OrderHistory
 from product.models import Product
@@ -11,7 +12,7 @@ import datetime
 
 # Create your views here.
 
-
+@login_required(login_url="/index")
 def view_cart(request):
     carts = Cart.objects.filter(user=request.user)
     addresses = Addressbook.objects.filter(user=request.user).order_by("-is_default")
