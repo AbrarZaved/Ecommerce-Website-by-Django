@@ -18,7 +18,7 @@ class Cart(models.Model):
     def save(self, *args, **kwargs):
         temp_selling_price = self.selling_price
         self.selling_price = self.selling_price * self.quantity
-        if self.quantity >= 3:
+        if self.quantity  and self.quantity >= 3:
             self.discount_price = self.quantity * 100
             self.selling_price = (
                 temp_selling_price * self.quantity - self.discount_price
