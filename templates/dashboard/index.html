@@ -68,10 +68,10 @@
             <i class="bi bi-bag"></i> Out of Stock
           </a>
           {% else %}
-          <a href="#" class="btn btn-primary mr-2" data-value={{product.slug}} id="buy_now">
+          <a href="{% url "buy_now" %}" class="btn btn-primary mr-2" data-value={{product.slug}} id="buy_now">
             <i class="bi bi-bag"></i> Buy Now
           </a>
-          <a href="#" class="btn btn-success" id="add_cart" data-value={{product.slug}}>
+          <a href="{% url "add_cart" %}" class="btn btn-success" id="add_cart" data-value={{product.slug}}>
             <i class="bi bi-cart-plus"></i> Add to Cart
           </a>
           {% endif %}
