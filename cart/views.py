@@ -86,62 +86,61 @@ def update_cart(request):
 
 
 def coupon_handle(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        coupon_name = data.get("coupon_name", "").upper()
+    if request.method != "POST":
+        return
+    data = json.loads(request.body)
+    coupon_name = data.get("coupon_name", "").upper()
 
-        # Get the total selling price from the cart
-        sub_total = (
+    # Get the total selling price from the cart
+    sub_total = (
+        Cart.objects.filter(user=request.user).aggregate(
+            total=Sum("selling_price")
+        )["total"]
+        or 0
+    )
+
+    # Get the coupon if it exists
+    coupon = Coupon.objects.filter(coupon_name=coupon_name).first()
+
+    discount_price = coupon.discount_price if coupon else 0
+
+    memo, created = Memo.objects.get_or_create(user=request.user)
+
+    if coupon:
+        memo.coupon = coupon
+        memo.total_discount = memo.total_discount + discount_price
+        memo.total_price = memo.total_price - discount_price
+    else:
+        # Reset total_price and total_discount if the coupon is invalid
+        memo.total_price = sub_total
+        memo.total_discount = (
             Cart.objects.filter(user=request.user).aggregate(
-                total=Sum("selling_price")
-            )["total"]
+                discount=Sum("discount_price")
+            )["discount"]
             or 0
         )
+        memo.coupon = None
 
-        # Get the coupon if it exists
-        coupon = Coupon.objects.filter(coupon_name=coupon_name).first()
+    memo.save()
 
-        discount_price = coupon.discount_price if coupon else 0
-
-        memo, created = Memo.objects.get_or_create(user=request.user)
-
-        if coupon:
-            memo.coupon = coupon
-            memo.total_discount = memo.total_discount + discount_price
-            memo.total_price = memo.total_price - discount_price
-        else:
-            # Reset total_price and total_discount if the coupon is invalid
-            memo.total_price = sub_total
-            memo.total_discount = (
-                Cart.objects.filter(user=request.user).aggregate(
-                    discount=Sum("discount_price")
-                )["discount"]
-                or 0
-            )
-            memo.coupon = None
-
-        memo.save()
-
-        return JsonResponse(
-            {
-                "discount_price": discount_price,
-                "sub_total": sub_total,
-                "total_price": memo.total_price,
-                "total_discount": memo.total_discount,
-            },
-            safe=False,
-        )
+    return JsonResponse(
+        {
+            "discount_price": discount_price,
+            "sub_total": sub_total,
+            "total_price": memo.total_price,
+            "total_discount": memo.total_discount,
+        },
+        safe=False,
+    )
 
 
 def handle_cart_update(
     request, slug, selling_price=None, size="S", quantity=1, single=False
 ):
     product = Product.objects.get(slug=slug)
-    cart_product = Cart.objects.filter(
+    if cart_product := Cart.objects.filter(
         product=product, user=request.user
-    ).first()  # Get the first matching cart
-
-    if cart_product:
+    ).first():
         # Update fields directly on the instance
         cart_product.selling_price = selling_price or product.price
         cart_product.size = size
