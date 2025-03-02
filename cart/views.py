@@ -12,6 +12,7 @@ import datetime
 
 # Create your views here.
 
+
 @login_required(login_url="/index")
 def view_cart(request):
     carts = Cart.objects.filter(user=request.user)
@@ -93,9 +94,9 @@ def coupon_handle(request):
 
     # Get the total selling price from the cart
     sub_total = (
-        Cart.objects.filter(user=request.user).aggregate(
-            total=Sum("selling_price")
-        )["total"]
+        Cart.objects.filter(user=request.user).aggregate(total=Sum("selling_price"))[
+            "total"
+        ]
         or 0
     )
 
@@ -138,9 +139,7 @@ def handle_cart_update(
     request, slug, selling_price=None, size="S", quantity=1, single=False
 ):
     product = Product.objects.get(slug=slug)
-    if cart_product := Cart.objects.filter(
-        product=product, user=request.user
-    ).first():
+    if cart_product := Cart.objects.filter(product=product, user=request.user).first():
         # Update fields directly on the instance
         cart_product.selling_price = selling_price or product.price
         cart_product.size = size
